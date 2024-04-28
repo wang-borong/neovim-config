@@ -16,6 +16,9 @@ map("n", "<leader>tl", ":Telescope live_grep<CR>", { desc = "spawn telescope wit
 map("n", "<leader>ta", ":TZAtaraxis <CR>", { desc = "enter ataraxis mode of truezen" })
 map("n", "<leader>tm", ":TZMinimalist <CR>", { desc = "enter minimize mode of truezen" })
 map("n", "<leader>tf", ":TZFocus <CR>", { desc = "enter focus mode of truezen" })
+-- Gitsigns
+map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
+map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
 
 map("n", "<leader>lc",
   function()

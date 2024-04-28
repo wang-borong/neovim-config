@@ -1,7 +1,22 @@
 require "nvchad.mappings"
 
 local map = vim.keymap.set
+local nomap = vim.keymap.del
 
+-- Disable mappings which i don't like
+nomap("i", "<C-b>")
+nomap("i", "<C-e>")
+nomap("i", "<C-h>")
+nomap("i", "<C-j>")
+nomap("i", "<C-k>")
+nomap("i", "<C-l>")
+nomap("n", "<C-s>")
+nomap("n", "<C-c>")
+nomap("n", "<Tab>")
+nomap("n", "<S-tab>")
+
+
+-- Create mappings
 -- map("n", ";", ":", { desc = "CMD enter command mode" })
 map("n", "<leader>p", "<cmd> %y+ <CR>", { desc = "copy whole file" })
 map("n", "<leader>w", "<cmd> w <CR>", { desc = "save file" })
@@ -20,13 +35,20 @@ map("n", "<leader>tf", ":TZFocus <CR>", { desc = "enter focus mode of truezen" }
 map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
 map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
 
-map("n", "<leader>lc",
-  function()
-    local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
-    local cmd = string.format(":s/%s/\\\\lstinline!%s!/g", cword, cword)
-    vim.cmd(cmd)
-  end,
-  { desc = "replace word to lstinline code"})
+-- biffer navigation
+map("n", "<A-j>", function()
+  require("nvchad.tabufline").tabuflineNext()
+end, { desc = "Goto next buffer" })
+map("n", "<A-k>", function()
+  require("nvchad.tabufline").tabuflinePrev()
+end, { desc = "Goto prev buffer" })
+
+-- replace word under cursor
+map("n", "<leader>lc", function()
+  local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
+  local cmd = string.format(":s/%s/\\\\lstinline!%s!/g", cword, cword)
+  vim.cmd(cmd)
+end, { desc = "replace word to lstinline code" })
 
 -- add pair
 map("v", "$<", "<esc>`>a><esc>`<i<<esc>", { desc = "wrap <> with selected context" })

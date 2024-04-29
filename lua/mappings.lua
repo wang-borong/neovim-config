@@ -37,10 +37,10 @@ map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
 
 -- biffer navigation
 map("n", "<A-j>", function()
-  require("nvchad.tabufline").tabuflineNext()
+  require("nvchad.tabufline").next()
 end, { desc = "Goto next buffer" })
 map("n", "<A-k>", function()
-  require("nvchad.tabufline").tabuflinePrev()
+  require("nvchad.tabufline").prev()
 end, { desc = "Goto prev buffer" })
 
 -- replace word under cursor

@@ -88,6 +88,13 @@ local plugins = {
   --   "mg979/vim-visual-multi",
   --   lazy = false,
   -- }
+
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require "configs.gitsigns"
+    end, -- Override to setup mason-lspconfig
+  },
 }
 
 return plugins

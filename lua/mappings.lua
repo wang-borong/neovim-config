@@ -23,7 +23,7 @@ map("n", "<leader>w", "<cmd> w <CR>", { desc = "save file" })
 map("n", "<leader>db", "gg0vG$d", { desc = "delete the buffer" })
 map("n", "<leader>s", ":Telescope grep_string<CR>", { desc = "grep string" })
 map("n", "<leader>cd", ":cd %:p:h<CR>:pwd<CR>", { desc = "enter to the location of current file" })
-map({"n", "i"}, "<leader>q", "<esc>:q<CR>", { desc = "quit nvim" })
+map("n", "<leader>q", "<esc>:q<CR>", { desc = "quit nvim" })
 -- telescope
 map("n", "<leader>te", ":Telescope <CR>", { desc = "spawn telescope" })
 map("n", "<leader>tl", ":Telescope live_grep<CR>", { desc = "spawn telescope with living grep" })

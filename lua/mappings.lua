@@ -65,11 +65,13 @@ end, { desc = "Clean extra space" })
 
 map("n", "<leader>U", function()
   local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
+  local saved_cursor = vim.api.nvim_win_get_cursor(0)
   local function upper_case(f, r)
     return f:upper()..r:lower()
   end
   local Cword = string.gsub(cword, "(%a)([%w_']*)", upper_case)
   vim.cmd(string.format(":s/%s/%s/", cword, Cword))
+  vim.api.nvim_win_set_cursor(0, saved_cursor)
 end, { desc = "Uppercase the string under the cursor" })
 
 -- add pair

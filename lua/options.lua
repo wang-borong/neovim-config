@@ -43,14 +43,6 @@ autocmd({"BufEnter", "BufWinEnter"}, {
   end,
 })
 
-autocmd("BufEnter", {
-  pattern = { "term://*" },
-  callback = function()
-    o.wo.nonumber = true
-    o.wo.laststatus = 0
-  end
-})
-
 autocmd("BufNewFile", {
   pattern = { "*.sh", "*.py", "*.[ch]", "*.cc", "*.cpp", "*.hpp" },
   callback = function()

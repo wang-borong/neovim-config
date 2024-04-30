@@ -32,30 +32,13 @@ map("n", "<leader>ta", ":TZAtaraxis <CR>", { desc = "Enter ataraxis mode of true
 map("n", "<leader>tm", ":TZMinimalist <CR>", { desc = "Enter minimize mode of truezen" })
 map("n", "<leader>tf", ":TZFocus <CR>", { desc = "Enter focus mode of truezen" })
 
--- biffer navigation
+-- buffer navigation
 map("n", "<A-j>", function()
   require("nvchad.tabufline").next()
 end, { desc = "Goto next buffer" })
 map("n", "<A-k>", function()
   require("nvchad.tabufline").prev()
 end, { desc = "Goto prev buffer" })
-
--- replace word under cursor
-map("n", "<leader>fw", function()
-  local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
-  local saved_cursor = vim.api.nvim_win_get_cursor(0)
-  local ft = vim.bo.filetype
-  if ft == 'tex' then
-    local cmd = string.format(":s/%s/\\\\lstinline!%s!/g", cword, cword)
-    vim.cmd(cmd)
-  elseif ft == 'markdown' then
-    local cmd = string.format(":s/%s/`%s`/g", cword, cword)
-    vim.cmd(cmd)
-  else
-    vim.fn.feedkeys(string.format(":s/%s/%s/", cword, cword))
-  end
-  vim.api.nvim_win_set_cursor(0, saved_cursor)
-end, { desc = "Add characters around a word" })
 
 map("n", "<leader>cs", function()
   local save_cursor = vim.fn.getpos(".")
@@ -105,4 +88,47 @@ map("v", "<leader>r", function()
   visual_selection(true)
 end, { desc = "Search and replace the selected text" })
 
-map("i", "jc", "/*  */<Left><Left><Left>", { desc = "Insert c style comment" })
+map("i", "ic", function()
+  local function add_comment(comments, col)
+    local pos = vim.api.nvim_win_get_cursor(0)
+    local row = pos[1]
+    -- local line = vim.api.nvim_get_current_line()
+    for _, c in pairs(comments) do
+      -- insert line to current buffer
+      vim.api.nvim_buf_set_lines(0, row, row, false, {c})
+      row = row + 1
+    end
+    if row > pos[1] + 1 then
+      row = row - 1
+    end
+    vim.api.nvim_win_set_cursor(0, {row, col})
+  end
+
+  local ft = vim.bo.filetype
+  local comments
+  local col = 3
+  if ft == 'c' or ft == 'go' or
+    ft == 'java' or ft == 'verilog' then
+    comments = { "/*", " * ", " */" }
+  elseif ft == 'rust' then
+    comments = { "//", "// ", "//" }
+  elseif ft == 'python' then
+    comments = {'"""', '', '"""'}
+    col = 1
+  elseif ft == 'sh' then
+    comments = { "#", "# ", "#" }
+    col = 2
+  elseif ft == 'lua' then
+    comments = { "-- [[", "-- ", "-- ]]" }
+  elseif ft == 'tex' or ft == 'plaintex' then
+    comments = { "%", "% ", "%" }
+    col = 2
+  elseif ft == 'markdown' then
+    comments = { "<!--  -->" }
+    col = 5
+  else
+    vim.print("Not supported filetype for inserting comments")
+    return
+  end
+  add_comment(comments, col)
+end, { desc = "Insert comment" })

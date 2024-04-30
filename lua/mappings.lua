@@ -43,6 +43,7 @@ end, { desc = "Goto prev buffer" })
 -- replace word under cursor
 map("n", "<leader>fw", function()
   local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
+  local saved_cursor = vim.api.nvim_win_get_cursor(0)
   local ft = vim.bo.filetype
   if ft == 'tex' then
     local cmd = string.format(":s/%s/\\\\lstinline!%s!/g", cword, cword)
@@ -53,6 +54,7 @@ map("n", "<leader>fw", function()
   else
     vim.fn.feedkeys(string.format(":s/%s/%s/", cword, cword))
   end
+  vim.api.nvim_win_set_cursor(0, saved_cursor)
 end, { desc = "Add characters around a word" })
 
 map("n", "<leader>cs", function()
@@ -73,16 +75,6 @@ map("n", "<leader>U", function()
   vim.cmd(string.format(":s/%s/%s/", cword, Cword))
   vim.api.nvim_win_set_cursor(0, saved_cursor)
 end, { desc = "Uppercase the string under the cursor" })
-
--- add pair
-map("v", "$<", "<esc>`>a><esc>`<i<<esc>", { desc = "Wrap <> with selected text" })
-map("v", "$(", "<esc>`>a)<esc>`<i(<esc>", { desc = "Wrap ()) with selected text" })
-map("v", "$[", "<esc>`>a]<esc>`<i[<esc>", { desc = "Wrap []] with selected text" })
-map("v", "${", "<esc>`>a}<esc>`<i{<esc>", { desc = "Wrap {} with selected text" })
-map("v", '$"', '<esc>`>a"<esc>`<i"<esc>', { desc = "Wrap \"\" with selected text" })
-map("v", "$'", "<esc>`>a'<esc>`<i'<esc>", { desc = "Wrap '' with selected text" })
-map("v", "$`", "<esc>`>a`<esc>`<i`<esc>", { desc = "Wrap `` with selected text" })
-map("v", "$$", "$", { desc = "Jump to the EOL in visual mode" })
 
 local function visual_selection(replace)
   local saved_reg = vim.fn.getreg('"')

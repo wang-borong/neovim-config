@@ -59,36 +59,7 @@ map("n", "<leader>U", function()
   vim.api.nvim_win_set_cursor(0, saved_cursor)
 end, { desc = "Uppercase the string under the cursor" })
 
-local function visual_selection(replace)
-  local saved_reg = vim.fn.getreg('"')
-  vim.cmd("normal! vgvy")
-
-  local pattern = vim.fn.escape(vim.fn.getreg('"'), "\\/.*'$^~[]")
-  pattern = vim.fn.substitute(pattern, "\n$", "", "")
-
-  if replace == true then
-    vim.fn.feedkeys(":%s" .. '/' .. pattern .. '/')
-  end
-
-  vim.fn.setreg("/", pattern)
-  vim.fn.setreg('"', saved_reg)
-end
--- Visual mode pressing * or # searches for the current selection
--- Super useful! From an idea by Michael Naumann
-map("v", "*", function()
-  visual_selection(false)
-  vim.cmd(string.format("/%s", vim.fn.getreg("/")))
-end, { desc = "Forward search for the selected text" })
-map("v", "#", function()
-  visual_selection(false)
-  vim.cmd(string.format("?%s", vim.fn.getreg("/")))
-end, { desc = "Backward search for the selected text" })
--- When you press <leader>r you can search and replace the selected text
-map("v", "<leader>r", function()
-  visual_selection(true)
-end, { desc = "Search and replace the selected text" })
-
-map("i", "<leader>ic", function()
+map("n", "<leader>ic", function()
   local function add_comment(comments, col)
     local pos = vim.api.nvim_win_get_cursor(0)
     local row = pos[1]
@@ -132,3 +103,32 @@ map("i", "<leader>ic", function()
   end
   add_comment(comments, col)
 end, { desc = "Insert comment" })
+
+local function visual_selection(replace)
+  local saved_reg = vim.fn.getreg('"')
+  vim.cmd("normal! vgvy")
+
+  local pattern = vim.fn.escape(vim.fn.getreg('"'), "\\/.*'$^~[]")
+  pattern = vim.fn.substitute(pattern, "\n$", "", "")
+
+  if replace == true then
+    vim.fn.feedkeys(":%s" .. '/' .. pattern .. '/')
+  end
+
+  vim.fn.setreg("/", pattern)
+  vim.fn.setreg('"', saved_reg)
+end
+-- Visual mode pressing * or # searches for the current selection
+-- Super useful! From an idea by Michael Naumann
+map("v", "*", function()
+  visual_selection(false)
+  vim.cmd(string.format("/%s", vim.fn.getreg("/")))
+end, { desc = "Forward search for the selected text" })
+map("v", "#", function()
+  visual_selection(false)
+  vim.cmd(string.format("?%s", vim.fn.getreg("/")))
+end, { desc = "Backward search for the selected text" })
+-- When you press <leader>r you can search and replace the selected text
+map("v", "<leader>r", function()
+  visual_selection(true)
+end, { desc = "Search and replace the selected text" })

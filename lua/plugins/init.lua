@@ -109,6 +109,7 @@ local plugins = {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     dependencies = { "nvim-lua/plenary.nvim" },
+    event = "VeryLazy",
     config = function()
       local harpoon = require("harpoon")
       harpoon:setup({
@@ -142,11 +143,8 @@ local plugins = {
   {
     "michaelb/sniprun",
     branch = "master",
-
     build = "sh install.sh",
-    -- do 'sh install.sh 1' if you want to force compile locally
-    -- (instead of fetching a binary from the github release). Requires Rust >= 1.65
-
+    event = "VeryLazy",
     config = function()
       require("sniprun").setup({
         -- your options

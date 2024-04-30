@@ -1,11 +1,9 @@
 require "nvchad.options"
 
--- add yours here!
-
 local o = vim.o
 local autocmd = vim.api.nvim_create_autocmd
--- o.cursorlineo ='both' -- to enable cursorline!
 
+-- o.cursorlineo ='both' -- to enable cursorline!
 o.smartcase = true
 o.ignorecase = true
 o.shiftwidth = 4

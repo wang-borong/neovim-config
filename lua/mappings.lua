@@ -88,7 +88,7 @@ map("v", "<leader>r", function()
   visual_selection(true)
 end, { desc = "Search and replace the selected text" })
 
-map("i", "ic", function()
+map("i", "<leader>ic", function()
   local function add_comment(comments, col)
     local pos = vim.api.nvim_win_get_cursor(0)
     local row = pos[1]

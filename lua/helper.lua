@@ -125,7 +125,7 @@ function M.update_header()
   local newdate_h = ' ' .. curdate
   local newdate_t = '-' .. curdate
   local s, e = string.find(crline, author, nil, true)
-  if e > s then
+  if s ~= nil and e ~= nil and e > s then
     if olddate_t ~= '' and olddate_t < newdate_t then
       local new_data_str = newdate_t
       vim.fn.setline(2, vim.fn.substitute(crline, olddate_t, new_data_str, ''))

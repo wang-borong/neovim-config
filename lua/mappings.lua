@@ -42,27 +42,25 @@ map("n", "<A-k>", function()
 end, { desc = "Goto prev buffer" })
 
 map("n", "<leader><space>", function()
-  local save_cursor = vim.fn.getpos(".")
+  local saved_cursor = vim.api.nvim_win_get_cursor(0)
   local old_query = vim.fn.getreg('/')
   vim.cmd([[silent! %s/\s\+$//e]])
-  vim.fn.setpos('.', save_cursor)
+  vim.api.nvim_win_set_cursor(0, saved_cursor)
   vim.fn.setreg('/', old_query)
 end, { desc = "Clean extra space" })
 
 map("n", "<leader>u", function()
-  local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
-  if cword == "" then return end
-  local saved_cursor = vim.api.nvim_win_get_cursor(0)
-  local function swap_case(f, r)
-    if f == f:upper() then
-      return f:lower()..r:lower()
-    else
-      return f:upper()..r:lower()
+  local cb = function(old_text)
+    local function swap_case(f, r)
+      if f == f:upper() then
+        return f:lower()..r
+      else
+        return f:upper()..r
+      end
     end
+    return string.gsub(old_text, "(%a)([%w_']*)", swap_case)
   end
-  local Cword = string.gsub(cword, "(%a)([%w_']*)", swap_case)
-  vim.cmd(string.format(":s/%s/%s/", cword, Cword))
-  vim.api.nvim_win_set_cursor(0, saved_cursor)
+  require("helper").replace_text_under_cursor(cb)
 end, { desc = "Swap the first character case of a string under the cursor" })
 
 map("n", "<leader>ic", function()

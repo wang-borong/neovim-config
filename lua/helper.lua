@@ -24,6 +24,28 @@ function M.insert_lines(lines, new_pos, replace)
   vim.api.nvim_win_set_cursor(0, new_pos)
 end
 
+-- cb: the callback used to change the text
+M.replace_text_under_cursor = function(cb)
+  local saved_cursor = vim.api.nvim_win_get_cursor(0)
+  local cline = vim.fn.getline(saved_cursor[1])
+  local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
+  local cwlen = cword:len()
+  if cwlen == 0 then return end
+  local s = saved_cursor[2] > cwlen and
+            saved_cursor[2] - cwlen or 0
+
+  -- find the exact start index of cword
+  s, _ = cline:find(cword, s, true)
+  local pre = cline:sub(1, s-1)
+  local post = cline:sub(s)
+
+  local nword = cb(cword)
+
+  post = post:gsub(cword, nword, 1)
+  vim.fn.setline(saved_cursor[1], pre..post)
+  vim.api.nvim_win_set_cursor(0, saved_cursor)
+end
+
 function M.visual_selection(replace)
   local saved_reg = vim.fn.getreg('"')
   vim.cmd("normal! vgvy")
@@ -54,22 +76,18 @@ function M.insert_header()
   if vim.bo.filetype == 'sh' then
     headers = {
       string.format("%s bash", script_env),
-      "",
-      ""
+      "", "",
     }
   elseif vim.bo.filetype == 'python' then
     headers = {
       string.format("%s python", script_env),
-      "",
-      ""
+      "", "",
     }
   else
     headers = {
       "/*",
       string.format(' * %s', copyright),
-      " */",
-      "",
-      "",
+      " */", "", "",
     }
   end
   if vim.fn.expand("%:e") == 'c' then
@@ -82,14 +100,15 @@ function M.insert_header()
     headers[#headers+1] = "\t;"
     pos[1] = #headers
     pos[2] = 8
+    headers[#headers+1] = ""
     headers[#headers+1] = "\treturn 0;"
     headers[#headers+1] = "}"
   end
   if vim.fn.expand("%:e") == 'h' then
-    local _hh = vim.fn.toupper(
+    local _H = vim.fn.toupper(
       vim.fn.substitute(vim.fn.expand("%:t"), "\\.h", "_h", ""))
-    headers[#headers+1] = string.format("#ifndef __%s", _hh)
-    headers[#headers+1] = string.format("#define __%s", _hh)
+    headers[#headers+1] = string.format("#ifndef __%s", _H)
+    headers[#headers+1] = string.format("#define __%s", _H)
     headers[#headers+1] = ""
     headers[#headers+1] = ""
     pos[1] = #headers

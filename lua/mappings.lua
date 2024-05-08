@@ -22,7 +22,8 @@ map("n", "<leader>p", "<cmd> %y+ <CR>", { desc = "Copy whole file" })
 map("n", "<leader>w", "<cmd> w <CR>", { desc = "Save file" })
 map("n", "<leader>db", "gg0vG$d", { desc = "Delete the buffer" })
 map("n", "<leader>s", ":Telescope grep_string<CR>", { desc = "Telescope grep_string" })
-map("n", "<leader>cd", ":cd %:p:h<CR>:pwd<CR>", { desc = "Enter into the directory of the current file" })
+map("n", "<leader>j", ":cd %:p:h<CR>:pwd<CR>", { desc = "Enter into the directory of the current file" })
+map("n", "<leader>k", ":cd -<CR>", { desc = "Return to last directory" })
 map("n", "<leader>q", "<esc>:q<CR>", { desc = "Quit nvim" })
 -- telescope
 map("n", "<leader>te", ":Telescope <CR>", { desc = "Spawn telescope" })
@@ -48,38 +49,29 @@ map("n", "<leader>cs", function()
   vim.fn.setreg('/', old_query)
 end, { desc = "Clean extra space" })
 
-map("n", "<leader>U", function()
+map("n", "<leader>u", function()
   local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
+  if cword == "" then return end
   local saved_cursor = vim.api.nvim_win_get_cursor(0)
-  local function upper_case(f, r)
-    return f:upper()..r:lower()
+  local function swap_case(f, r)
+    if f == f:upper() then
+      return f:lower()..r:lower()
+    else
+      return f:upper()..r:lower()
+    end
   end
-  local Cword = string.gsub(cword, "(%a)([%w_']*)", upper_case)
+  local Cword = string.gsub(cword, "(%a)([%w_']*)", swap_case)
   vim.cmd(string.format(":s/%s/%s/", cword, Cword))
   vim.api.nvim_win_set_cursor(0, saved_cursor)
-end, { desc = "Uppercase the string under the cursor" })
+end, { desc = "Swap the first character case of a string under the cursor" })
 
 map("n", "<leader>ic", function()
-  local function add_comment(comments, col)
-    local pos = vim.api.nvim_win_get_cursor(0)
-    local row = pos[1]
-    -- local line = vim.api.nvim_get_current_line()
-    for _, c in pairs(comments) do
-      -- insert line to current buffer
-      vim.api.nvim_buf_set_lines(0, row, row, false, {c})
-      row = row + 1
-    end
-    if row > pos[1] + 1 then
-      row = row - 1
-    end
-    vim.api.nvim_win_set_cursor(0, {row, col})
-  end
-
   local ft = vim.bo.filetype
   local comments
   local col = 3
   if ft == 'c' or ft == 'go' or
-    ft == 'java' or ft == 'verilog' then
+    ft == 'java' or ft == 'verilog' or
+    ft == 'cpp' then
     comments = { "/*", " * ", " */" }
   elseif ft == 'rust' then
     comments = { "//", "// ", "//" }
@@ -101,34 +93,20 @@ map("n", "<leader>ic", function()
     vim.print("Not supported filetype for inserting comments")
     return
   end
-  add_comment(comments, col)
+  require("helper").insert_lines(comments, {-1, col}, false)
 end, { desc = "Insert comment" })
 
-local function visual_selection(replace)
-  local saved_reg = vim.fn.getreg('"')
-  vim.cmd("normal! vgvy")
-
-  local pattern = vim.fn.escape(vim.fn.getreg('"'), "\\/.*'$^~[]")
-  pattern = vim.fn.substitute(pattern, "\n$", "", "")
-
-  if replace == true then
-    vim.fn.feedkeys(":%s" .. '/' .. pattern .. '/')
-  end
-
-  vim.fn.setreg("/", pattern)
-  vim.fn.setreg('"', saved_reg)
-end
 -- Visual mode pressing * or # searches for the current selection
 -- Super useful! From an idea by Michael Naumann
 map("v", "*", function()
-  visual_selection(false)
+  require("helper").visual_selection(false)
   vim.cmd(string.format("/%s", vim.fn.getreg("/")))
 end, { desc = "Forward search for the selected text" })
 map("v", "#", function()
-  visual_selection(false)
+  require("helper").visual_selection(false)
   vim.cmd(string.format("?%s", vim.fn.getreg("/")))
 end, { desc = "Backward search for the selected text" })
 -- When you press <leader>r you can search and replace the selected text
 map("v", "<leader>r", function()
-  visual_selection(true)
+  require("helper").visual_selection(true)
 end, { desc = "Search and replace the selected text" })

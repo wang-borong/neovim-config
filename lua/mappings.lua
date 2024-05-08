@@ -41,7 +41,7 @@ map("n", "<A-k>", function()
   require("nvchad.tabufline").prev()
 end, { desc = "Goto prev buffer" })
 
-map("n", "<leader>cs", function()
+map("n", "<leader><space>", function()
   local save_cursor = vim.fn.getpos(".")
   local old_query = vim.fn.getreg('/')
   vim.cmd([[silent! %s/\s\+$//e]])

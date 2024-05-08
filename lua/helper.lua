@@ -105,10 +105,10 @@ function M.insert_header()
     headers[#headers+1] = "}"
   end
   if vim.fn.expand("%:e") == 'h' then
-    local _H = vim.fn.toupper(
-      vim.fn.substitute(vim.fn.expand("%:t"), "\\.h", "_h", ""))
-    headers[#headers+1] = string.format("#ifndef __%s", _H)
-    headers[#headers+1] = string.format("#define __%s", _H)
+    local hdef = vim.fn.expand("%:t"):
+          gsub("[\\#\\@\\$\\.-]", "_"):upper()
+    headers[#headers+1] = string.format("#ifndef __%s", hdef)
+    headers[#headers+1] = string.format("#define __%s", hdef)
     headers[#headers+1] = ""
     headers[#headers+1] = ""
     pos[1] = #headers

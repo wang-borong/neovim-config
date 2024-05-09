@@ -27,7 +27,8 @@ end
 -- cb: the callback used to change the text
 M.replace_text_under_cursor = function(cb)
   local saved_cursor = vim.api.nvim_win_get_cursor(0)
-  local cline = vim.fn.getline(saved_cursor[1])
+  local cline = vim.fn.getline(".")
+  if cline == "" then return end
   local cword = vim.fn.escape(vim.fn.expand('<cword>'), [[\/]])
   local cwlen = cword:len()
   if cwlen == 0 then return end
@@ -54,7 +55,7 @@ function M.visual_selection(replace)
   pattern = vim.fn.substitute(pattern, "\n$", "", "")
 
   if replace == true then
-    vim.fn.feedkeys(":%s" .. '/' .. pattern .. '/')
+    vim.fn.feedkeys(":%s/" .. pattern .. "/")
   end
 
   vim.fn.setreg("/", pattern)

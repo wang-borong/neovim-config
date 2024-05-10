@@ -9,11 +9,29 @@ local servers = { 'clangd', 'rust_analyzer', 'pyright',
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    on_init = on_init,
-    capabilities = capabilities,
-  }
+  if lsp == "clangd" then
+    lspconfig[lsp].setup {
+      on_attach = on_attach,
+      on_init = on_init,
+      capabilities = capabilities,
+      cmd = {
+        "clangd",
+        "--header-insertion=never",
+        "-j", string.gsub(vim.fn.system('nproc'), "\n", ""),
+        "--completion-style=detailed",
+        "--function-arg-placeholders",
+        "--rename-file-limit=0",
+        "--background-index",
+        "--background-index-priority=normal",
+      },
+    }
+  else
+    lspconfig[lsp].setup {
+      on_attach = on_attach,
+      on_init = on_init,
+      capabilities = capabilities,
+    }
+  end
 end
 
 -- typescript

@@ -5,11 +5,10 @@ local M = {}
 -- currnet: if current is true then the current line will 
 -- be replaced by the first line.
 function M.insert_lines(lines, new_pos, replace)
-  local pos = vim.api.nvim_win_get_cursor(0)
-  local row = pos[1]
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local len = #lines
-  if new_pos[1] == -1 then new_pos[1] = pos[1] + math.ceil(len / 2) end
-  if new_pos[2] == -1 then new_pos[2] = pos[2] end
+  if new_pos[1] == -1 then new_pos[1] = row + math.ceil(len / 2) end
+  if new_pos[2] == -1 then new_pos[2] = col end
   if replace == true then
     -- This is a destructive operation, it will replace all 
     -- lines from row to row + len.
@@ -73,7 +72,7 @@ function M.insert_header()
   local script_env = '#!/usr/bin/env'
 
   local headers
-  local pos = {3, 0}
+  local row = 3
   if vim.bo.filetype == 'sh' then
     headers = {
       string.format("%s bash", script_env),
@@ -99,8 +98,7 @@ function M.insert_header()
     headers[#headers+1] = "int main(int argc, char *argv[])"
     headers[#headers+1] = "{"
     headers[#headers+1] = "\t;"
-    pos[1] = #headers
-    pos[2] = 8
+    row = #headers
     headers[#headers+1] = ""
     headers[#headers+1] = "\treturn 0;"
     headers[#headers+1] = "}"
@@ -116,7 +114,7 @@ function M.insert_header()
     headers[#headers+1] = string.format("#define __%s", hdef)
     headers[#headers+1] = ""
     headers[#headers+1] = ""
-    pos[1] = #headers
+    row = #headers
     headers[#headers+1] = ""
     headers[#headers+1] = "#endif"
   end
@@ -125,16 +123,16 @@ function M.insert_header()
     headers[#headers+1] = "using namespace std;"
     headers[#headers+1] = ""
     headers[#headers+1] = ""
-    pos[1] = #headers
+    row = #headers
   end
   if vim.fn.expand("%:e") == 'hpp' then
     vim.fn.append(vim.fn.line(".") + 4, "#pragma once")
     headers[#headers+1] = "#pragma once"
     headers[#headers+1] = ""
     headers[#headers+1] = ""
-    pos[1] = #headers
+    row = #headers
   end
-  M.insert_lines(headers, pos, true)
+  M.insert_lines(headers, {row, 8}, true)
 end
 
 function M.update_header()

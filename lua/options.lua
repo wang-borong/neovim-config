@@ -1,5 +1,6 @@
 require "nvchad.options"
 
+local opt = vim.opt
 local o = vim.o
 local autocmd = vim.api.nvim_create_autocmd
 
@@ -14,7 +15,7 @@ o.cursorline = true
 o.wrap = true
 o.mouse = ""
 
-vim.opt.iskeyword:append("-")
+opt.iskeyword:append("-")
 
 autocmd("FileType", {
   pattern = { "lua", "markdown", "tex" },
@@ -39,18 +40,4 @@ autocmd({"BufEnter", "BufWinEnter"}, {
 		o.shiftwidth = 8
     o.expandtab = false
   end,
-})
-
-autocmd("BufNewFile", {
-  pattern = { "*.sh", "*.py", "*.[ch]", "*.cc", "*.cpp", "*.hpp" },
-  callback = function()
-    require("helper").insert_header()
-  end
-})
-
-autocmd({"BufEnter", "BufWinEnter"}, {
-  pattern = { "*.[ch]", "*.cc", "*.cpp", "*.hpp" },
-  callback = function()
-    require("helper").update_header()
-  end
 })

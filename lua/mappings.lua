@@ -49,20 +49,6 @@ map("n", "<leader><space>", function()
   vim.fn.setreg('/', old_query)
 end, { desc = "Clean extra space" })
 
-map("n", "<leader>u", function()
-  local cb = function(old_text)
-    local function swap_case(f, r)
-      if f == f:upper() then
-        return f:lower()..r
-      else
-        return f:upper()..r
-      end
-    end
-    return string.gsub(old_text, "(%a)([%w_']*)", swap_case)
-  end
-  require("helper").replace_text_under_cursor(cb)
-end, { desc = "Swap the first character case of a string under the cursor" })
-
 map("n", "<leader>ic", function()
   local ft = vim.bo.filetype
   local comments

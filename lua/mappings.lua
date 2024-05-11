@@ -24,7 +24,6 @@ map("n", "<leader>db", "gg0vG$d", { desc = "Delete all contents from current buf
 map("n", "<leader>s", ":Telescope grep_string<CR>", { desc = "Telescope grep_string" })
 map("n", "<leader>j", ":cd %:p:h<CR>:pwd<CR>", { desc = "Enter into the directory of the current file" })
 map("n", "<leader>k", ":cd -<CR>", { desc = "Return to last directory" })
-map("n", "<leader>q", "<esc>:q<CR>", { desc = "Quit nvim" })
 -- telescope
 map("n", "<leader>te", ":Telescope <CR>", { desc = "Spawn telescope" })
 map("n", "<leader>tl", ":Telescope live_grep<CR>", { desc = "Telescope live_grep" })

@@ -106,8 +106,12 @@ function M.insert_header()
     headers[#headers+1] = "}"
   end
   if vim.fn.expand("%:e") == 'h' then
+    -- If special characters in file name, we replace them
+    -- with `_`.
+    -- NOTE: YOU SHOULD NOT USE THIS SPECIAL CHARACTERS
+    -- TO CREATE NEW FILE NAME.
     local hdef = vim.fn.expand("%:t"):
-          gsub("[\\#\\@\\$\\.-]", "_"):upper()
+          gsub("[~!@#&=,'|\"\\%$%.%-%+%?%*%^%%]+", "_"):upper()
     headers[#headers+1] = string.format("#ifndef __%s", hdef)
     headers[#headers+1] = string.format("#define __%s", hdef)
     headers[#headers+1] = ""

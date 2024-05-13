@@ -22,8 +22,16 @@ map("n", "<leader>p", "<cmd> %y+ <CR>", { desc = "Copy whole file" })
 map("n", "<leader>w", "<cmd> w <CR>", { desc = "Save file" })
 map("n", "<leader>db", "gg0vG$d", { desc = "Delete all contents from current buffer" })
 map("n", "<leader>s", ":Telescope grep_string<CR>", { desc = "Telescope grep_string" })
-map("n", "<leader>j", ":cd %:p:h<CR>:pwd<CR>", { desc = "Enter into the directory of the current file" })
-map("n", "<leader>k", ":cd -<CR>", { desc = "Return to last directory" })
+map("n", "<leader>j", function()
+  local cwd = vim.fn.getcwd()
+  local fdir = vim.fn.expand("%:p:h")
+  if cwd ~= fdir then
+    vim.cmd("cd "..fdir)
+  else
+    -- catch the exception when no previous directory
+    vim.cmd("try | cd - | catch | | endtry")
+  end
+end, { desc = "Switch dir to file's dir or cwd(where nvim executed)" })
 -- telescope
 map("n", "<leader>te", ":Telescope <CR>", { desc = "Spawn telescope" })
 map("n", "<leader>tl", ":Telescope live_grep<CR>", { desc = "Telescope live_grep" })

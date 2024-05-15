@@ -56,37 +56,6 @@ map("n", "<leader><space>", function()
   vim.fn.setreg('/', old_query)
 end, { desc = "Clean extra space" })
 
-map("n", "<leader>ic", function()
-  local ft = vim.bo.filetype
-  local comments
-  local col = 3
-  if ft == 'c' or ft == 'go' or
-    ft == 'java' or ft == 'verilog' or
-    ft == 'cpp' then
-    comments = { "/*", " * ", " */" }
-  elseif ft == 'rust' then
-    comments = { "//", "// ", "//" }
-  elseif ft == 'python' then
-    comments = {'"""', '', '"""'}
-    col = 1
-  elseif ft == 'sh' then
-    comments = { "#", "# ", "#" }
-    col = 2
-  elseif ft == 'lua' then
-    comments = { "-- [[", "-- ", "-- ]]" }
-  elseif ft == 'tex' or ft == 'plaintex' then
-    comments = { "%", "% ", "%" }
-    col = 2
-  elseif ft == 'markdown' then
-    comments = { "<!--  -->" }
-    col = 5
-  else
-    vim.print("Not supported filetype for inserting comments")
-    return
-  end
-  require("helper").insert_lines(comments, {-1, col}, false)
-end, { desc = "Insert comment" })
-
 -- Visual mode pressing * or # searches for the current selection
 -- Super useful! From an idea by Michael Naumann
 map("v", "*", function()

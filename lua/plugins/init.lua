@@ -153,6 +153,14 @@ local plugins = {
     end,
   },
 
+  {
+    "h-hg/fcitx.nvim",
+    event = "InsertEnter",
+    -- ft = {
+    --   "tex",
+    --   "markdown",
+    -- }
+  },
 }
 
 return plugins

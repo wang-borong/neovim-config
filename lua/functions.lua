@@ -12,10 +12,8 @@ function ReplaceLineWithCmd(cmd, lnum)
     if handle ~= nil then
       newline = handle:read("*a")
       handle:close()
-    else
-      newline = line
+      vim.api.nvim_set_current_line(newline)
     end
-    vim.api.nvim_set_current_line(newline)
     i = i + 1
   end
 end

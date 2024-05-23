@@ -31,6 +31,7 @@ map("n", "<leader>j", function()
     -- catch the exception when no previous directory
     vim.cmd("try | cd - | catch | | endtry")
   end
+  vim.cmd("pwd")
 end, { desc = "Switch dir to file's dir or cwd(where nvim executed)" })
 -- telescope
 map("n", "<leader>te", ":Telescope <CR>", { desc = "Spawn telescope" })

@@ -4,13 +4,6 @@ local map = vim.keymap.set
 local nomap = vim.keymap.del
 
 -- Disable mappings which i don't like
-nomap("i", "<C-b>")
-nomap("i", "<C-e>")
-nomap("i", "<C-h>")
-nomap("i", "<C-j>")
-nomap("i", "<C-k>")
-nomap("i", "<C-l>")
-nomap("n", "<C-s>")
 nomap("n", "<C-c>")
 nomap("n", "<Tab>")
 nomap("n", "<S-tab>")

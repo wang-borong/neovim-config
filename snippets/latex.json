@@ -1,0 +1,60 @@
+{
+    "Fig": {
+        "prefix": "Fig",
+        "body": [
+            "\\Figure[caption={$1}, label={fig:$2}, width=$3]{$2}",
+            "$0"
+        ],
+        "description": "Add my figure"
+    },
+    "ltblr": {
+        "prefix": "ltblr",
+        "body": [
+            "\\\\begin{ltblr}[caption={$1}, label={tbl:$2}]",
+            "  {colspec={$3}}",
+            "  \\hline[1pt]",
+            "  $4",
+            "  \\hline",
+            "  $0",
+            "  \\hline[1pt]",
+            "\\\\end{ltblr}"
+        ],
+        "description": "My long table"
+    },
+    "stblr": {
+        "prefix": "stblr",
+        "body": [
+            "\\\\begin{stblr}",
+            "  {$1}",
+            "  {$2}",
+            "  {$3}",
+            "  \\hline[1pt]",
+            "  $4",
+            "  \\hline",
+            "  $0",
+            "  \\hline[1pt]",
+            "\\\\end{stblr}"
+        ],
+        "description": "My short table"
+    },
+    "Note": {
+        "prefix": "note",
+        "body": [
+            "\\\\begin{Tcbox}[title={注意}]",
+            "  $0",
+            "\\\\end{Tcbox}"
+        ],
+        "description": "Add my note box"
+    },
+    "probsolu": {
+        "prefix": "probsolu",
+        "body": [
+            "\\\\begin{probsolu}[title={$1}]{",
+            "  $2",
+            "}\\label{pb:$3}",
+            "  $0",
+            "\\\\end{Tcbox}"
+        ],
+        "description": "Add my problem and solution box"
+    }
+}

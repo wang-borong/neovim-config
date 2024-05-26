@@ -2,7 +2,15 @@ require "nvchad.options"
 
 local opt = vim.opt
 local o = vim.o
+local g = vim.g
 local autocmd = vim.api.nvim_create_autocmd
+
+-- vscode format i.e json files
+g.vscode_snippets_path = vim.fn.stdpath "config" .. "/snippets"
+-- snipmate format
+g.snipmate_snippets_path = vim.fn.stdpath "config" .. "/snippets"
+-- lua format
+g.lua_snippets_path = vim.fn.stdpath "config" .. "/snippets"
 
 -- o.cursorlineo ='both' -- to enable cursorline!
 o.smartcase = true

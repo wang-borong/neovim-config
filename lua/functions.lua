@@ -38,7 +38,7 @@ local function TextConvert(f, t, sel)
     if sel == true then
       local s_start = vim.fn.getpos("'<")
       local s_end = vim.fn.getpos("'>")
-      vim.cmd(("%d,%dd"):format(s_start[2] - 1, s_end[2]))
+      vim.cmd(("%d,%dd"):format(s_start[2], s_end[2]))
     end
     vim.api.nvim_put(lines, "", false, true)
   end

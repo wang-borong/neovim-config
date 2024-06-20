@@ -59,3 +59,16 @@ end
 function VTex2Md()
   TextConvert("latex", "markdown", true)
 end
+
+function ToUTF8()
+  local encoding
+  local filename = vim.api.nvim_buf_get_name(0)
+  local uchardet = io.popen(("uchardet '%s'"):format(filename))
+  if uchardet ~= nil then
+    encoding = uchardet:read("*a"):gsub("[ \n]", "")
+    uchardet:close()
+  end
+
+  os.execute(("iconv -f %s -t utf-8 '%s' -o '%s'"):format(encoding, filename, filename))
+  vim.cmd(":edit!")
+end

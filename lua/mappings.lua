@@ -33,6 +33,8 @@ map("n", "<leader>tl", ":Telescope live_grep<CR>", { desc = "Telescope live_grep
 map("n", "<leader>ta", ":TZAtaraxis <CR>", { desc = "Enter ataraxis mode of truezen" })
 map("n", "<leader>tm", ":TZMinimalist <CR>", { desc = "Enter minimize mode of truezen" })
 map("n", "<leader>tf", ":TZFocus <CR>", { desc = "Enter focus mode of truezen" })
+-- others
+map("n", "<leader>u", ":lua ToUTF8() <CR>", {desc = "Convert file encoding to utf-8"})
 
 -- buffer navigation
 map("n", "<A-j>", function()

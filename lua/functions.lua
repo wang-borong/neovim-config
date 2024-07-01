@@ -63,10 +63,14 @@ end
 function ToUTF8()
   local encoding
   local filename = vim.api.nvim_buf_get_name(0)
-  local uchardet = io.popen(("uchardet '%s'"):format(filename))
+  local uchardet = io.popen(("uchardet '%s' 2>/dev/null"):format(filename))
   if uchardet ~= nil then
     encoding = uchardet:read("*a"):gsub("[ \n]", "")
     uchardet:close()
+    if encoding == '' then
+      print('uchardet: can not get file encoding')
+      return
+    end
   end
 
   os.execute(("iconv -f %s -t utf-8 '%s' -o '%s'"):format(encoding, filename, filename))

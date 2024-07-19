@@ -43,6 +43,7 @@ M.mason = {
     "flake8",
     "rust-analyzer",
     "verible",
+    "java-language-server",
   },
 }
 

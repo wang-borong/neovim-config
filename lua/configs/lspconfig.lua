@@ -30,6 +30,15 @@ local servers = {
   bashls = {},
   verible = {},
   texlab = {},
+  -- java_language_server = {
+  --   cmd = {
+  --     vim.fn.stdpath "data" .. "/mason/" ..
+  --     "packages/java-language-server/dist/lang_server_linux.sh",
+  --   },
+  -- },
+  gopls = {},
+  jqls = {},
+  marksman = {},
 }
 
 -- lsps with default config

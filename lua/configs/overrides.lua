@@ -9,6 +9,7 @@ M.treesitter = {
     "json",
     "bash",
     "python",
+    "perl",
     "c",
     "rust",
     "toml",

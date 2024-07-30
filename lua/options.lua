@@ -37,15 +37,23 @@ autocmd("FileType", {
   pattern = { "python" },
   callback = function()
     o.expandtab = true
-		o.textwidth = 120
+    o.textwidth = 120
   end,
 })
 
 autocmd({"BufEnter", "BufWinEnter"}, {
   pattern = { "*.c", "*.h" },
   callback = function()
-		o.tabstop = 8
-		o.shiftwidth = 8
+    o.tabstop = 8
+    o.shiftwidth = 8
+    o.expandtab = false
+  end,
+})
+
+autocmd("FileType", {
+  pattern = { "kconfig" },
+  callback = function()
+    -- we need real tabs
     o.expandtab = false
   end,
 })

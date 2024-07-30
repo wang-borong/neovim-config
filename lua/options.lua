@@ -51,7 +51,7 @@ autocmd({"BufEnter", "BufWinEnter"}, {
 })
 
 autocmd("FileType", {
-  pattern = { "kconfig" },
+  pattern = { "kconfig", "make" },
   callback = function()
     -- we need real tabs
     o.expandtab = false

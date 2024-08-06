@@ -39,16 +39,22 @@ local autocmds = {
       end,
     }, {
       pattern = { "rust" },
-      callback = function ()
+      callback = function()
         o.textwidth = 100
       end
     }, {
+      -- must use tabs in some filetypes
       pattern = { "kconfig", "make" },
       callback = function()
-        -- we need real tabs
         o.expandtab = false
       end,
-    },
+    }, {
+      -- we perfer using tabs in some filetypes
+      pattern = { "go", "dts" },
+      callback = function()
+        o.expandtab = false
+      end
+    }
   },
   [ { "BufEnter", "BufWinEnter" } ] = { {
       pattern = { "*.c", "*.h" },

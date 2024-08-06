@@ -35,9 +35,12 @@ M.replace_text_under_cursor = function(cb)
             saved_cursor[2] - cwlen or 0
 
   -- find the exact start index of cword
-  s, _ = cline:find(cword, s, true)
-  local pre = cline:sub(1, s-1)
-  local post = cline:sub(s)
+  local _s, _ = cline:find(cword, s, true)
+  if _s == nil then
+    return
+  end
+  local pre = cline:sub(1, _s-1)
+  local post = cline:sub(_s)
 
   local nword = cb(cword)
 
@@ -106,7 +109,7 @@ function M.insert_header()
   if vim.fn.expand("%:e") == 'h' then
     -- If special characters in file name, we replace them
     -- with `_`.
-    -- NOTE: YOU SHOULD NOT USE THIS SPECIAL CHARACTERS
+    -- NOTE: YOU SHOULD NOT USE SPECIAL CHARACTERS
     -- TO CREATE NEW FILE NAME.
     local hdef = vim.fn.expand("%:t"):
           gsub("[~!@#&=,'|\"\\%$%.%-%+%?%*%^%%]+", "_"):upper()

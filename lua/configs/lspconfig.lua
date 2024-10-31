@@ -39,6 +39,11 @@ local servers = {
   gopls = {},
   jqls = {},
   marksman = {},
+  typst_lsp = {
+    settings = {
+      exportPdf = "never", -- Choose onType, onSave or never.
+    }
+  },
 }
 
 -- lsps with default config

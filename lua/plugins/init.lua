@@ -3,12 +3,27 @@ local overrides = require("configs.overrides")
 ---@type NvPluginSpec[]
 local plugins = {
 
+  "nvim-lua/plenary.nvim",
+
+  {
+    "nvchad/ui",
+    config = function()
+      require "nvchad"
+    end
+  },
+
+  {
+    "nvchad/base46",
+    lazy = true,
+    build = function()
+      require("base46").load_all_highlights()
+    end,
+  },
+
   {
     "stevearc/conform.nvim",
     -- event = 'BufWritePre', -- uncomment for format on save
-    config = function()
-      require "configs.conform"
-    end,
+    opts = require "configs.conform",
   },
 
   {
@@ -160,6 +175,12 @@ local plugins = {
     --   "tex",
     --   "markdown",
     -- }
+  },
+
+  {
+    'kaarmu/typst.vim',
+    ft = 'typst',
+    lazy=false,
   },
 }
 

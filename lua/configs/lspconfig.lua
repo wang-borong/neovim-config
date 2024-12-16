@@ -39,11 +39,12 @@ local servers = {
   gopls = {},
   jqls = {},
   marksman = {},
-  typst_lsp = {
+  tinymist = {
     settings = {
-      exportPdf = "never", -- Choose onType, onSave or never.
+      exportPdf = "never",
+      -- outputPath = "$root/target/$dir/$name",
     }
-  },
+  }
 }
 
 -- lsps with default config

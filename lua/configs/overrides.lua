@@ -45,7 +45,7 @@ M.mason = {
     "rust-analyzer",
     "verible",
     "java-language-server",
-    "typst-lsp",
+    "tinymist",
   },
 }
 

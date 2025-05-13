@@ -64,6 +64,14 @@ local autocmds = {
         o.expandtab = false
       end,
     },
+  },
+  [ { "BufEnter", "BufWinEnter" } ] = { {
+      pattern = { "*.cc", "*.cpp", "*.hpp" },
+      callback = function()
+        o.tabstop = 2
+        o.shiftwidth = 2
+      end,
+    },
   }
 }
 

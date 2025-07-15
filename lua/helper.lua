@@ -123,7 +123,7 @@ function M.insert_header()
   end
   if vim.fn.expand("%:e") == 'cpp' or vim.fn.expand("%:e") == 'cc' then
     headers[#headers+1] = "#include <iostream>"
-    headers[#headers+1] = "using namespace std;"
+    -- headers[#headers+1] = "using namespace std;"
     headers[#headers+1] = ""
     headers[#headers+1] = ""
     row = #headers

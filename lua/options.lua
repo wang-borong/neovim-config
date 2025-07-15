@@ -66,7 +66,7 @@ local autocmds = {
     },
   },
   [ { "BufEnter", "BufWinEnter" } ] = { {
-      pattern = { "*.cc", "*.cpp", "*.hpp" },
+      pattern = { "*.cc", "*.cpp", "*.hh", "*.hpp" },
       callback = function()
         o.tabstop = 2
         o.shiftwidth = 2

@@ -1,14 +1,6 @@
-local lspconfig = require("lspconfig")
-
-local on_attach = require("nvchad.configs.lspconfig").on_attach
-local on_init = require("nvchad.configs.lspconfig").on_init
-local capabilities = require("nvchad.configs.lspconfig").capabilities
-
-local defconf = {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
-}
+if vim.lsp.config then
+  require("nvchad.configs.lspconfig").defaults()
+end
 
 -- If on_attach, on_init and capabilities don't meet your needs,
 -- You can override it here.
@@ -49,6 +41,21 @@ local servers = {
 
 -- lsps with default config
 for lsp, optconf in pairs(servers) do
-  local conf = vim.tbl_deep_extend("force", defconf, optconf)
-  lspconfig[lsp].setup(conf)
+  if vim.lsp.config then
+    vim.lsp.config(lsp, optconf)
+    vim.lsp.enable(lsp)
+  else
+    local lspconfig = require("lspconfig")
+
+    local on_attach = require("nvchad.configs.lspconfig").on_attach
+    local on_init = require("nvchad.configs.lspconfig").on_init
+    local capabilities = require("nvchad.configs.lspconfig").capabilities
+    local defconf = {
+      on_attach = on_attach,
+      on_init = on_init,
+      capabilities = capabilities,
+    }
+    local conf = vim.tbl_deep_extend("force", defconf, optconf)
+    lspconfig[lsp].setup(conf)
+  end
 end

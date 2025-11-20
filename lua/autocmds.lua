@@ -1,31 +1,45 @@
 local autocmd = vim.api.nvim_create_autocmd
 
+-- File patterns for header insertion
+local header_file_patterns = { "*.sh", "*.py", "*.[ch]", "*.cc", "*.cpp", "*.hpp" }
+
+-- File patterns for header update
+local header_update_patterns = { "*.[ch]", "*.cc", "*.cpp", "*.hpp" }
+
+-- Filetypes that should not restore cursor position
+local no_cursor_restore_filetypes = { "commit", "xxd", "gitrebase" }
+
+-- Insert header for new files
 autocmd("BufNewFile", {
-  pattern = { "*.sh", "*.py", "*.[ch]", "*.cc", "*.cpp", "*.hpp" },
+  pattern = header_file_patterns,
   callback = function()
     require("helper").insert_header()
-  end
+  end,
 })
 
-autocmd({"BufEnter", "BufWinEnter"}, {
-  pattern = { "*.[ch]", "*.cc", "*.cpp", "*.hpp" },
+-- Update header for existing files
+autocmd({ "BufEnter", "BufWinEnter" }, {
+  pattern = header_update_patterns,
   callback = function()
     require("helper").update_header()
-  end
+  end,
 })
 
--- Return to last cursor when file opened
+-- Restore cursor position when opening files
 autocmd("BufReadPost", {
   pattern = "*",
   callback = function()
-    local line = vim.fn.line "'\""
-    if
-      line > 1
-      and line <= vim.fn.line "$"
-      and vim.bo.filetype ~= "commit"
-      and vim.fn.index({ "xxd", "gitrebase" }, vim.bo.filetype) == -1
-    then
-      vim.cmd 'normal! g`"'
+    local last_line = vim.fn.line('"')
+    local total_lines = vim.fn.line("$")
+    local filetype = vim.bo.filetype
+    
+    local should_restore = last_line > 1
+      and last_line <= total_lines
+      and filetype ~= "commit"
+      and vim.tbl_contains(no_cursor_restore_filetypes, filetype) == false
+    
+    if should_restore then
+      vim.cmd('normal! g`"')
     end
   end,
 })

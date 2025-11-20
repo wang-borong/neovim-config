@@ -1,9 +1,9 @@
+-- Load default LSP config if using new LSP API
 if vim.lsp.config then
   require("nvchad.configs.lspconfig").defaults()
 end
 
--- If on_attach, on_init and capabilities don't meet your needs,
--- You can override it here.
+-- LSP server configurations
 local servers = {
   clangd = {
     cmd = {
@@ -22,40 +22,40 @@ local servers = {
   bashls = {},
   verible = {},
   texlab = {},
-  -- java_language_server = {
-  --   cmd = {
-  --     vim.fn.stdpath "data" .. "/mason/" ..
-  --     "packages/java-language-server/dist/lang_server_linux.sh",
-  --   },
-  -- },
   gopls = {},
   jqls = {},
   marksman = {},
   tinymist = {
     settings = {
       exportPdf = "never",
-      -- outputPath = "$root/target/$dir/$name",
-    }
-  }
+    },
+  },
 }
 
--- lsps with default config
-for lsp, optconf in pairs(servers) do
+-- Setup LSP servers with default configuration
+local function setup_lsp_servers()
   if vim.lsp.config then
-    vim.lsp.config(lsp, optconf)
-    vim.lsp.enable(lsp)
+    -- New LSP API
+    for lsp, config in pairs(servers) do
+      vim.lsp.config(lsp, config)
+      vim.lsp.enable(lsp)
+    end
   else
+    -- Legacy LSP API
     local lspconfig = require("lspconfig")
-
-    local on_attach = require("nvchad.configs.lspconfig").on_attach
-    local on_init = require("nvchad.configs.lspconfig").on_init
-    local capabilities = require("nvchad.configs.lspconfig").capabilities
-    local defconf = {
-      on_attach = on_attach,
-      on_init = on_init,
-      capabilities = capabilities,
+    local nvchad_lsp = require("nvchad.configs.lspconfig")
+    
+    local default_config = {
+      on_attach = nvchad_lsp.on_attach,
+      on_init = nvchad_lsp.on_init,
+      capabilities = nvchad_lsp.capabilities,
     }
-    local conf = vim.tbl_deep_extend("force", defconf, optconf)
-    lspconfig[lsp].setup(conf)
+    
+    for lsp, config in pairs(servers) do
+      local merged_config = vim.tbl_deep_extend("force", default_config, config)
+      lspconfig[lsp].setup(merged_config)
+    end
   end
 end
+
+setup_lsp_servers()

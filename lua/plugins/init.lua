@@ -54,7 +54,7 @@ local plugins = {
     "max397574/better-escape.nvim",
     event = "InsertEnter",
     config = function()
-      require("better_escape").setup()
+      require("better_escape").setup({})
     end,
   },
 
@@ -112,13 +112,11 @@ local plugins = {
 
   {
     "kylechui/nvim-surround",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    version = "*",
     event = "VeryLazy",
     config = function()
-      require("nvim-surround").setup({
-        -- Configuration here, or leave empty to use defaults
-      })
-    end
+      require("nvim-surround").setup({})
+    end,
   },
 
   {
@@ -128,15 +126,15 @@ local plugins = {
     event = "VeryLazy",
     config = function()
       local harpoon = require("harpoon")
-      harpoon:setup({
-        -- Leave as default
-      })
+      harpoon:setup({})
 
-      -- basic telescope configuration
-      local conf = require("telescope.config").values
-      local function toggle_telescope(harpoon_files)
+      -- Telescope integration for harpoon
+      local telescope_config = require("telescope.config").values
+      local function open_harpoon_telescope()
+        local harpoon_list = harpoon:list()
         local file_paths = {}
-        for _, item in ipairs(harpoon_files.items) do
+        
+        for _, item in ipairs(harpoon_list.items) do
           table.insert(file_paths, item.value)
         end
 
@@ -145,14 +143,12 @@ local plugins = {
           finder = require("telescope.finders").new_table({
             results = file_paths,
           }),
-          previewer = conf.file_previewer({}),
-          sorter = conf.generic_sorter({}),
+          previewer = telescope_config.file_previewer({}),
+          sorter = telescope_config.generic_sorter({}),
         }):find()
       end
 
-      vim.keymap.set("n", "<leader>ha", function()
-        toggle_telescope(harpoon:list())
-      end, { desc = "Open harpoon window" })
+      vim.keymap.set("n", "<leader>ha", open_harpoon_telescope, { desc = "Open harpoon window" })
     end,
   },
 
@@ -162,9 +158,7 @@ local plugins = {
     build = "sh install.sh",
     event = "VeryLazy",
     config = function()
-      require("sniprun").setup({
-        -- your options
-      })
+      require("sniprun").setup({})
     end,
   },
 
@@ -178,9 +172,9 @@ local plugins = {
   },
 
   {
-    'kaarmu/typst.vim',
-    ft = 'typst',
-    lazy=false,
+    "kaarmu/typst.vim",
+    ft = "typst",
+    lazy = false,
   },
 }
 

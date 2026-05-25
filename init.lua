@@ -38,3 +38,4 @@ vim.schedule(function()
 end)
 
 require "autocmds"
+require "expansion"

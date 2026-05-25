@@ -22,7 +22,7 @@ o.cursorline = true
 o.wrap = true
 o.mouse = ""
 
-opt.iskeyword:append("-")
+opt.iskeyword:append "-"
 
 -- Helper function to create autocmd with pattern and callback
 local function create_autocmd(events, pattern, callback)

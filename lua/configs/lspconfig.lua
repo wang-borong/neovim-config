@@ -9,7 +9,8 @@ local servers = {
     cmd = {
       "clangd",
       "--header-insertion=never",
-      "-j", string.gsub(vim.fn.system('nproc'), "\n", ""),
+      "-j",
+      string.gsub(vim.fn.system "nproc", "\n", ""),
       "--completion-style=detailed",
       "--function-arg-placeholders",
       "--rename-file-limit=0",
@@ -42,15 +43,15 @@ local function setup_lsp_servers()
     end
   else
     -- Legacy LSP API
-    local lspconfig = require("lspconfig")
-    local nvchad_lsp = require("nvchad.configs.lspconfig")
-    
+    local lspconfig = require "lspconfig"
+    local nvchad_lsp = require "nvchad.configs.lspconfig"
+
     local default_config = {
       on_attach = nvchad_lsp.on_attach,
       on_init = nvchad_lsp.on_init,
       capabilities = nvchad_lsp.capabilities,
     }
-    
+
     for lsp, config in pairs(servers) do
       local merged_config = vim.tbl_deep_extend("force", default_config, config)
       lspconfig[lsp].setup(merged_config)

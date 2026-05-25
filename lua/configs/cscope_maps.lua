@@ -1,4 +1,4 @@
-require("cscope_maps").setup({
+require("cscope_maps").setup {
   -- Maps related defaults
   disable_maps = false,
   skip_input_prompt = false,
@@ -19,4 +19,4 @@ require("cscope_maps").setup({
       change_cwd = false,
     },
   },
-})
+}

@@ -29,17 +29,17 @@ autocmd({ "BufEnter", "BufWinEnter" }, {
 autocmd("BufReadPost", {
   pattern = "*",
   callback = function()
-    local last_line = vim.fn.line('"')
-    local total_lines = vim.fn.line("$")
+    local last_line = vim.fn.line '"'
+    local total_lines = vim.fn.line "$"
     local filetype = vim.bo.filetype
-    
+
     local should_restore = last_line > 1
       and last_line <= total_lines
       and filetype ~= "commit"
       and vim.tbl_contains(no_cursor_restore_filetypes, filetype) == false
-    
+
     if should_restore then
-      vim.cmd('normal! g`"')
+      vim.cmd 'normal! g`"'
     end
   end,
 })

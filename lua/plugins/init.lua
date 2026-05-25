@@ -1,4 +1,4 @@
-local overrides = require("configs.overrides")
+local overrides = require "configs.overrides"
 
 ---@type NvPluginSpec[]
 local plugins = {
@@ -9,7 +9,7 @@ local plugins = {
     "nvchad/ui",
     config = function()
       require "nvchad"
-    end
+    end,
   },
 
   {
@@ -37,7 +37,7 @@ local plugins = {
   -- override plugin configs
   {
     "williamboman/mason.nvim",
-    opts = overrides.mason
+    opts = overrides.mason,
   },
 
   {
@@ -54,7 +54,7 @@ local plugins = {
     "max397574/better-escape.nvim",
     event = "InsertEnter",
     config = function()
-      require("better_escape").setup({})
+      require("better_escape").setup {}
     end,
   },
 
@@ -115,7 +115,7 @@ local plugins = {
     version = "*",
     event = "VeryLazy",
     config = function()
-      require("nvim-surround").setup({})
+      require("nvim-surround").setup {}
     end,
   },
 
@@ -125,27 +125,29 @@ local plugins = {
     dependencies = { "nvim-lua/plenary.nvim" },
     event = "VeryLazy",
     config = function()
-      local harpoon = require("harpoon")
-      harpoon:setup({})
+      local harpoon = require "harpoon"
+      harpoon:setup {}
 
       -- Telescope integration for harpoon
       local telescope_config = require("telescope.config").values
       local function open_harpoon_telescope()
         local harpoon_list = harpoon:list()
         local file_paths = {}
-        
+
         for _, item in ipairs(harpoon_list.items) do
           table.insert(file_paths, item.value)
         end
 
-        require("telescope.pickers").new({}, {
-          prompt_title = "Harpoon",
-          finder = require("telescope.finders").new_table({
-            results = file_paths,
-          }),
-          previewer = telescope_config.file_previewer({}),
-          sorter = telescope_config.generic_sorter({}),
-        }):find()
+        require("telescope.pickers")
+          .new({}, {
+            prompt_title = "Harpoon",
+            finder = require("telescope.finders").new_table {
+              results = file_paths,
+            },
+            previewer = telescope_config.file_previewer {},
+            sorter = telescope_config.generic_sorter {},
+          })
+          :find()
       end
 
       vim.keymap.set("n", "<leader>ha", open_harpoon_telescope, { desc = "Open harpoon window" })
@@ -158,7 +160,7 @@ local plugins = {
     build = "sh install.sh",
     event = "VeryLazy",
     config = function()
-      require("sniprun").setup({})
+      require("sniprun").setup {}
     end,
   },
 

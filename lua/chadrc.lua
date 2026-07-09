@@ -5,7 +5,11 @@
 local M = {}
 
 M.base46 = {
-  theme = "onedark",
+  theme = "github_dark",
+  theme_toggle = { "github_dark", "one_light" },
+  transparency = false,
+  hl_override = require("highlights").override,
+  hl_add = require("highlights").add,
 }
 
 return M

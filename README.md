@@ -15,7 +15,7 @@
 
 ## ✨ 特性
 
-- 🎨 **美观的界面**: 基于 OneDark 主题，现代化的 UI
+- 🎨 **美观的界面**: 基于 NvChad/base46 的 GitHub Dark 主题，现代化的 UI
 - ⚡ **高性能**: 使用 lazy.nvim 进行插件懒加载
 - 🔧 **LSP 支持**: 覆盖 C/C++、Python、Rust、Go、Dart、Java、Kotlin 等主力语言
 - 📝 **代码格式化**: 集成多种格式化工具
@@ -373,7 +373,7 @@ Leader 键设置为 `;`
 
 ## 🎨 主题
 
-当前使用 **OneDark** 主题，可在 `lua/chadrc.lua` 中修改。
+当前使用 **GitHub Dark** 主题，基于 NvChad/base46 内置主题和少量静态高亮覆盖，不额外引入 colorscheme 插件。可在 `lua/chadrc.lua` 中修改主题，细节高亮位于 `lua/highlights.lua`。
 
 ## 📄 许可证
 

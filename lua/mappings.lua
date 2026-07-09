@@ -41,6 +41,12 @@ end
 
 -- Other utility mappings
 cmd_map("n", "<leader>u", "lua ToUTF8()", "Convert file encoding to utf-8")
+map({ "n", "v" }, "<leader>fm", function()
+  require("conform").format {
+    async = true,
+    lsp_format = "fallback",
+  }
+end, { desc = "Format file or range" })
 
 -- Buffer navigation
 local tabufline = require "nvchad.tabufline"

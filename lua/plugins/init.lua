@@ -22,16 +22,78 @@ local plugins = {
 
   {
     "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
 
   {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPost", "BufNewFile", "BufWritePost" },
+    config = function()
+      require "configs.lint"
+    end,
+  },
+
+  {
     "neovim/nvim-lspconfig",
+    dependencies = {
+      "p00f/clangd_extensions.nvim",
+    },
     config = function()
       require("nvchad.configs.lspconfig").defaults()
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+    event = "VeryLazy",
+    dependencies = {
+      "jay-babu/mason-nvim-dap.nvim",
+      "nvim-neotest/nvim-nio",
+      "rcarriga/nvim-dap-ui",
+    },
+    config = function()
+      require "configs.dap"
+    end,
+  },
+
+  {
+    "akinsho/flutter-tools.nvim",
+    ft = "dart",
+    cmd = {
+      "FlutterRun",
+      "FlutterDevices",
+      "FlutterEmulators",
+      "FlutterReload",
+      "FlutterRestart",
+      "FlutterQuit",
+      "FlutterOutlineToggle",
+    },
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      "nvim-lua/plenary.nvim",
+    },
+    opts = {
+      ui = {
+        border = "rounded",
+      },
+      debugger = {
+        enabled = true,
+        run_via_dap = true,
+      },
+      lsp = {
+        color = {
+          enabled = true,
+        },
+        settings = {
+          completeFunctionCalls = true,
+          showTodos = true,
+          analysisExcludedFolders = {
+            vim.fn.expand "$HOME/.pub-cache",
+          },
+        },
+      },
+    },
   },
 
   -- override plugin configs

@@ -19,8 +19,12 @@
 - ⚡ **高性能**: 使用 lazy.nvim 进行插件懒加载
 - 🔧 **LSP 支持**: 完整的语言服务器协议支持
 - 📝 **代码格式化**: 集成多种格式化工具
+- 🔎 **代码诊断**: 使用 nvim-lint 接入轻量级诊断工具
 - 🎯 **智能补全**: 基于 LSP 的代码补全
 - 🌳 **语法高亮**: TreeSitter 语法高亮
+- 🧩 **C/CUDA 增强**: clangd 扩展、内联提示和 CUDA 语法支持
+- 📱 **Flutter/Dart 支持**: Flutter 热重载、设备管理和 Dart LSP
+- 🧪 **断点调试**: nvim-dap、DAP UI、codelldb 和 debugpy
 - 📂 **文件管理**: NvimTree 文件浏览器
 - 🔍 **快速搜索**: Telescope 模糊搜索
 - 📊 **Git 集成**: Gitsigns Git 状态显示
@@ -30,7 +34,7 @@
 
 ### 前置要求
 
-- Neovim >= 0.9.0
+- Neovim >= 0.10.0
 - Git
 - 可选: 各种语言服务器（通过 Mason 自动安装）
 
@@ -76,8 +80,9 @@
     ├── configs/            # 插件配置
     │   ├── lazy.lua        # Lazy.nvim 配置
     │   ├── lspconfig.lua   # LSP 配置
-    │   ├── null-ls.lua     # Null-ls 配置
     │   ├── conform.lua     # Conform 配置
+    │   ├── lint.lua        # nvim-lint 配置
+    │   ├── dap.lua         # nvim-dap 配置
     │   ├── gitsigns.lua    # Gitsigns 配置
     │   ├── truezen.lua     # TrueZen 配置
     │   ├── cscope_maps.lua # Cscope 映射
@@ -93,15 +98,28 @@
 - **Lua**: stylua
 - **Shell**: shfmt
 - **C/C++**: clang-format
-- **Python**: autopep8
+- **CUDA**: clang-format
+- **Python**: ruff
 - **Rust**: rustfmt
-- **Markdown/JSON/YAML**: prettierd
+- **Markdown/JSON/YAML**: prettierd，回退到 prettier
 
 ### 代码诊断
 
-- **Lua**: luacheck
+- **Lua**: lua-language-server
 - **Shell**: shellcheck
-- **Python**: flake8
+- **Python**: ruff
+
+### 断点调试
+
+- **C/C++/CUDA/Rust**: codelldb
+- **Python**: debugpy
+- **UI**: nvim-dap-ui 自动随调试会话打开和关闭
+
+### Flutter/Dart
+
+- Dart 文件自动加载 flutter-tools
+- 支持 Flutter run、设备/模拟器管理、Hot Reload 和 Hot Restart
+- Flutter 调试会话通过 nvim-dap 运行
 
 ### 自动文件头
 
@@ -134,6 +152,7 @@ Leader 键设置为 `;`
 | `<leader>w` | 保存文件 |
 | `<leader>p` | 复制整个文件到剪贴板 |
 | `<leader>db` | 删除缓冲区所有内容 |
+| `<leader>fm` | 使用 conform 格式化当前文件或选区 |
 | `<leader>j` | 切换工作目录到文件目录或返回 |
 
 ### 搜索
@@ -175,6 +194,21 @@ Leader 键设置为 `;`
 | `<leader>u` | 转换文件编码为 UTF-8 |
 | `<leader>ha` | 打开 Harpoon 窗口 |
 
+### DAP 调试
+
+| 快捷键 | 功能 |
+|--------|------|
+| `<leader>dc` | 继续/启动调试 |
+| `<leader>dB` | 切换断点 |
+| `<leader>dC` | 清除所有断点 |
+| `<leader>di` | 单步进入 |
+| `<leader>do` | 单步跳过 |
+| `<leader>dO` | 单步跳出 |
+| `<leader>dr` | 打开 DAP REPL |
+| `<leader>du` | 切换 DAP UI |
+| `<leader>dx` | 终止调试 |
+| `<leader>dl` | 设置日志断点 |
+
 ### Git 操作 (Gitsigns)
 
 | 快捷键 | 功能 |
@@ -212,12 +246,20 @@ Leader 键设置为 `;`
 
 - **nvim-lspconfig**: LSP 配置
 - **mason.nvim**: LSP/DAP/Linter/Formatter 管理器
-- **null-ls**: 代码格式化和诊断
+- **clangd_extensions.nvim**: clangd 增强能力
 
 ### 语法和代码
 
 - **nvim-treesitter**: 语法高亮和代码解析
 - **conform.nvim**: 代码格式化
+- **nvim-lint**: 代码诊断
+
+### 调试和跨平台开发
+
+- **nvim-dap**: Debug Adapter Protocol 客户端
+- **nvim-dap-ui**: 调试 UI
+- **mason-nvim-dap.nvim**: DAP 适配器安装和配置
+- **flutter-tools.nvim**: Flutter/Dart 集成
 
 ### UI 和导航
 
@@ -244,6 +286,7 @@ Leader 键设置为 `;`
 ### LSP 服务器
 
 - **C/C++**: clangd
+- **C/C++ 增强**: clangd_extensions.nvim
 - **Rust**: rust-analyzer
 - **Python**: pyright
 - **Go**: gopls
@@ -254,12 +297,13 @@ Leader 键设置为 `;`
 - **Verilog**: verible
 - **JSON**: jqls
 - **Typst**: tinymist
+- **Dart/Flutter**: flutter-tools 接管 dartls
 
 ### TreeSitter 解析器
 
 - lua, vim, comment, dockerfile, json
-- bash, python, perl
-- c, rust, toml, go
+- bash, python, cuda, perl
+- c, cpp, dart, rust, toml, go
 - verilog, markdown, markdown_inline
 
 ### 文件类型特定配置

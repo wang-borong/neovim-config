@@ -17,14 +17,14 @@
 
 - 🎨 **美观的界面**: 基于 OneDark 主题，现代化的 UI
 - ⚡ **高性能**: 使用 lazy.nvim 进行插件懒加载
-- 🔧 **LSP 支持**: 完整的语言服务器协议支持
+- 🔧 **LSP 支持**: 覆盖 C/C++、Python、Rust、Go、Dart、Java、Kotlin 等主力语言
 - 📝 **代码格式化**: 集成多种格式化工具
 - 🔎 **代码诊断**: 使用 nvim-lint 接入轻量级诊断工具
 - 🎯 **智能补全**: 基于 LSP 的代码补全
 - 🌳 **语法高亮**: TreeSitter 语法高亮
 - 🧩 **C/CUDA 增强**: clangd 扩展、内联提示和 CUDA 语法支持
 - 📱 **Flutter/Dart 支持**: Flutter 热重载、设备管理和 Dart LSP
-- 🧪 **断点调试**: nvim-dap、DAP UI、codelldb 和 debugpy
+- 🧪 **断点调试**: nvim-dap、DAP UI、codelldb、debugpy、delve、Java/Kotlin 调试和 STM32 ST-Link
 - 📂 **文件管理**: NvimTree 文件浏览器
 - 🔍 **快速搜索**: Telescope 模糊搜索
 - 📊 **Git 集成**: Gitsigns Git 状态显示
@@ -37,6 +37,7 @@
 - Neovim >= 0.10.0
 - Git
 - 可选: 各种语言服务器（通过 Mason 自动安装）
+- 可选: STM32 调试需要系统安装 `openocd` 和 `arm-none-eabi-gdb`
 
 ### 安装步骤
 
@@ -83,6 +84,8 @@
     │   ├── conform.lua     # Conform 配置
     │   ├── lint.lua        # nvim-lint 配置
     │   ├── dap.lua         # nvim-dap 配置
+    │   ├── jdtls.lua       # Java LSP/DAP 配置
+    │   ├── rustaceanvim.lua # Rust 专用增强配置
     │   ├── gitsigns.lua    # Gitsigns 配置
     │   ├── truezen.lua     # TrueZen 配置
     │   ├── cscope_maps.lua # Cscope 映射
@@ -99,27 +102,49 @@
 - **Shell**: shfmt
 - **C/C++**: clang-format
 - **CUDA**: clang-format
-- **Python**: ruff
+- **Python**: ruff organize imports + ruff format
 - **Rust**: rustfmt
+- **Go**: goimports + gofumpt
+- **Dart**: dart format
+- **Java**: google-java-format
+- **Kotlin**: ktlint
+- **CMake**: cmake-format
 - **Markdown/JSON/YAML**: prettierd，回退到 prettier
 
 ### 代码诊断
 
 - **Lua**: lua-language-server
+- **C/C++/CUDA**: clangd + clang-tidy
 - **Shell**: shellcheck
-- **Python**: ruff
+- **Python**: basedpyright + ruff server
+- **Rust**: rustaceanvim/rust-analyzer + clippy
+- **Go**: gopls staticcheck + golangci-lint
+- **Java**: nvim-jdtls
+- **Kotlin**: kotlin-lsp + ktlint
 
 ### 断点调试
 
 - **C/C++/CUDA/Rust**: codelldb
 - **Python**: debugpy
+- **Go**: delve
+- **Java**: nvim-jdtls + java-debug-adapter/java-test
+- **Kotlin**: kotlin-debug-adapter
+- **STM32/ST-Link**: OpenOCD + `arm-none-eabi-gdb -i dap`，可选 cortex-debug
 - **UI**: nvim-dap-ui 自动随调试会话打开和关闭
+- **行内变量**: nvim-dap-virtual-text
 
 ### Flutter/Dart
 
 - Dart 文件自动加载 flutter-tools
 - 支持 Flutter run、设备/模拟器管理、Hot Reload 和 Hot Restart
 - Flutter 调试会话通过 nvim-dap 运行
+
+### STM32/ST-Link 调试
+
+- `:STM32OpenOCD target/stm32f4x.cfg`: 使用 `interface/stlink.cfg` 启动 OpenOCD
+- DAP 配置 `STM32 ST-Link OpenOCD attach`: 连接已经运行的 OpenOCD `localhost:3333`
+- DAP 配置 `STM32 ST-Link OpenOCD attach + load`: 连接后执行 `load` 并复位
+- DAP 配置 `STM32 ST-Link cortex-debug launch`: 走 cortex-debug，适合需要 RTT、内存视图和 `launch.json` 兼容参数的场景
 
 ### 自动文件头
 
@@ -247,6 +272,9 @@ Leader 键设置为 `;`
 - **nvim-lspconfig**: LSP 配置
 - **mason.nvim**: LSP/DAP/Linter/Formatter 管理器
 - **clangd_extensions.nvim**: clangd 增强能力
+- **rustaceanvim**: Rust 专用 LSP、code action 和 DAP 增强
+- **nvim-jdtls**: Java LSP、测试和调试工作流
+- **flutter-tools.nvim**: Flutter/Dart 集成
 
 ### 语法和代码
 
@@ -259,7 +287,9 @@ Leader 键设置为 `;`
 - **nvim-dap**: Debug Adapter Protocol 客户端
 - **nvim-dap-ui**: 调试 UI
 - **mason-nvim-dap.nvim**: DAP 适配器安装和配置
-- **flutter-tools.nvim**: Flutter/Dart 集成
+- **nvim-dap-go**: Go/Delve 调试集成
+- **nvim-dap-virtual-text**: 调试变量行内显示
+- **nvim-dap-cortex-debug**: Cortex-M/STM32 调试增强
 
 ### UI 和导航
 
@@ -286,24 +316,29 @@ Leader 键设置为 `;`
 ### LSP 服务器
 
 - **C/C++**: clangd
-- **C/C++ 增强**: clangd_extensions.nvim
-- **Rust**: rust-analyzer
-- **Python**: pyright
+- **C/C++/CUDA 增强**: clangd_extensions.nvim + clang-tidy
+- **Rust**: rustaceanvim 接管 rust-analyzer
+- **Python**: basedpyright + ruff
 - **Go**: gopls
+- **Dart/Flutter**: flutter-tools 接管 dartls
+- **Java**: nvim-jdtls
+- **Kotlin**: kotlin-lsp
 - **Bash**: bashls
 - **Lua**: lua-language-server
+- **CMake**: neocmakelsp
+- **ASM**: asm-lsp
 - **Markdown**: marksman
 - **LaTeX**: texlab
 - **Verilog**: verible
 - **JSON**: jqls
 - **Typst**: tinymist
-- **Dart/Flutter**: flutter-tools 接管 dartls
 
 ### TreeSitter 解析器
 
 - lua, vim, comment, dockerfile, json
-- bash, python, cuda, perl
-- c, cpp, dart, rust, toml, go
+- bash, python, cuda, asm, perl
+- c, cpp, dart, rust, ron, toml, go, gomod, gosum, gowork
+- java, kotlin, cmake, make
 - verilog, markdown, markdown_inline
 
 ### 文件类型特定配置

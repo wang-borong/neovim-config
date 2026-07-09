@@ -1,9 +1,12 @@
--- Load default LSP config if using new LSP API
-if vim.lsp.config then
-  require("nvchad.configs.lspconfig").defaults()
-end
-
 local nvchad_lsp = require "nvchad.configs.lspconfig"
+
+local function kotlin_lsp_cmd()
+  if vim.fn.exepath "kotlin-lsp" ~= "" then
+    return { "kotlin-lsp", "--stdio" }
+  end
+
+  return { "intellij-server", "--stdio" }
+end
 
 -- LSP server configurations
 local servers = {
@@ -25,14 +28,64 @@ local servers = {
       "--rename-file-limit=0",
       "--background-index",
       "--background-index-priority=normal",
+      "--clang-tidy",
     },
   },
-  rust_analyzer = {},
-  pyright = {},
+  basedpyright = {
+    settings = {
+      basedpyright = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "workspace",
+          typeCheckingMode = "standard",
+        },
+      },
+    },
+  },
+  ruff = {},
   bashls = {},
+  neocmake = {},
+  asm_lsp = {},
   verible = {},
   texlab = {},
-  gopls = {},
+  gopls = {
+    settings = {
+      gopls = {
+        gofumpt = true,
+        staticcheck = true,
+        analyses = {
+          fieldalignment = true,
+          nilness = true,
+          shadow = true,
+          unusedparams = true,
+          unusedwrite = true,
+          useany = true,
+        },
+        hints = {
+          assignVariableTypes = true,
+          compositeLiteralFields = true,
+          compositeLiteralTypes = true,
+          constantValues = true,
+          functionTypeParameters = true,
+          parameterNames = true,
+          rangeVariableTypes = true,
+        },
+      },
+    },
+  },
+  kotlin_lsp = {
+    cmd = kotlin_lsp_cmd(),
+    filetypes = { "kotlin" },
+    root_markers = {
+      "settings.gradle",
+      "settings.gradle.kts",
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "workspace.json",
+      ".git",
+    },
+  },
   jqls = {},
   marksman = {},
   tinymist = {

@@ -35,6 +35,7 @@ local plugins = {
 
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "p00f/clangd_extensions.nvim",
     },
@@ -45,15 +46,90 @@ local plugins = {
   },
 
   {
+    "mrcjkb/rustaceanvim",
+    version = "^6",
+    lazy = false,
+    init = function()
+      require("configs.rustaceanvim").setup()
+    end,
+  },
+
+  {
     "mfussenegger/nvim-dap",
     event = "VeryLazy",
     dependencies = {
       "jay-babu/mason-nvim-dap.nvim",
+      "leoluz/nvim-dap-go",
       "nvim-neotest/nvim-nio",
       "rcarriga/nvim-dap-ui",
+      "theHamsta/nvim-dap-virtual-text",
     },
     config = function()
       require "configs.dap"
+    end,
+  },
+
+  {
+    "mfussenegger/nvim-jdtls",
+    ft = "java",
+    config = function()
+      local jdtls_config = require "configs.jdtls"
+
+      jdtls_config.start()
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("UserJdtls", { clear = true }),
+        pattern = "java",
+        callback = jdtls_config.start,
+      })
+    end,
+  },
+
+  {
+    "jedrzejboczar/nvim-dap-cortex-debug",
+    ft = { "c", "cpp", "cuda" },
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    },
+    config = function()
+      local ok_cortex_debug, cortex_debug = pcall(require, "dap-cortex-debug")
+
+      if not ok_cortex_debug then
+        return
+      end
+
+      cortex_debug.setup {
+        dap_vscode_filetypes = { "c", "cpp", "cuda" },
+      }
+
+      local function input_elf()
+        return vim.fn.input("Path to ELF: ", vim.fn.getcwd() .. "/build/", "file")
+      end
+
+      local function input_openocd_target()
+        return vim.fn.input("OpenOCD target config: ", "target/stm32f4x.cfg", "file")
+      end
+
+      local cortex_openocd = cortex_debug.openocd_config {
+        name = "STM32 ST-Link cortex-debug launch",
+        cwd = "${workspaceFolder}",
+        executable = input_elf,
+        configFiles = function()
+          return { "interface/stlink.cfg", input_openocd_target() }
+        end,
+        gdbTarget = "localhost:3333",
+        rttConfig = cortex_debug.rtt_config(0),
+        showDevDebugOutput = false,
+      }
+
+      local dap = require "dap"
+      dap.configurations.c = dap.configurations.c or {}
+      dap.configurations.cpp = dap.configurations.cpp or {}
+      dap.configurations.cuda = dap.configurations.cuda or {}
+
+      table.insert(dap.configurations.c, cortex_openocd)
+      table.insert(dap.configurations.cpp, vim.deepcopy(cortex_openocd))
+      table.insert(dap.configurations.cuda, vim.deepcopy(cortex_openocd))
     end,
   },
 

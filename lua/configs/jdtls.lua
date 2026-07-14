@@ -18,8 +18,10 @@ function M.start()
     return
   end
 
-  local project_name = vim.fn.fnamemodify(root_dir, ":p:h:t")
-  local workspace_dir = vim.fn.stdpath "data" .. "/jdtls-workspace/" .. project_name
+  local normalized_root = vim.fs.normalize(root_dir)
+  local project_name = vim.fs.basename(normalized_root)
+  local workspace_key = string.format("%s-%s", project_name, vim.fn.sha256(normalized_root):sub(1, 12))
+  local workspace_dir = vim.fn.stdpath "data" .. "/jdtls-workspace/" .. workspace_key
 
   local bundles = {}
   local mason_share = vim.fn.stdpath "data" .. "/mason/share"

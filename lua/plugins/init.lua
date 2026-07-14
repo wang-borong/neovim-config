@@ -2,24 +2,6 @@ local overrides = require "configs.overrides"
 
 ---@type NvPluginSpec[]
 local plugins = {
-
-  "nvim-lua/plenary.nvim",
-
-  {
-    "nvchad/ui",
-    config = function()
-      require "nvchad"
-    end,
-  },
-
-  {
-    "nvchad/base46",
-    lazy = true,
-    build = function()
-      require("base46").load_all_highlights()
-    end,
-  },
-
   {
     "stevearc/conform.nvim",
     opts = require "configs.conform",
@@ -56,7 +38,25 @@ local plugins = {
 
   {
     "mfussenegger/nvim-dap",
-    event = "VeryLazy",
+    cmd = {
+      "DapClearBreakpoints",
+      "DapContinue",
+      "DapDisconnect",
+      "DapEval",
+      "DapNew",
+      "DapPause",
+      "DapRestartFrame",
+      "DapSetLogLevel",
+      "DapShowLog",
+      "DapStepInto",
+      "DapStepOut",
+      "DapStepOver",
+      "DapTerminate",
+      "DapToggleBreakpoint",
+      "DapToggleRepl",
+      "STM32OpenOCD",
+    },
+    keys = require "configs.dap_keys",
     dependencies = {
       "jay-babu/mason-nvim-dap.nvim",
       "leoluz/nvim-dap-go",
@@ -87,49 +87,20 @@ local plugins = {
 
   {
     "jedrzejboczar/nvim-dap-cortex-debug",
-    ft = { "c", "cpp", "cuda" },
     dependencies = {
       "mfussenegger/nvim-dap",
     },
-    config = function()
-      local ok_cortex_debug, cortex_debug = pcall(require, "dap-cortex-debug")
-
-      if not ok_cortex_debug then
-        return
-      end
-
-      cortex_debug.setup {
-        dap_vscode_filetypes = { "c", "cpp", "cuda" },
-      }
-
-      local function input_elf()
-        return vim.fn.input("Path to ELF: ", vim.fn.getcwd() .. "/build/", "file")
-      end
-
-      local function input_openocd_target()
-        return vim.fn.input("OpenOCD target config: ", "target/stm32f4x.cfg", "file")
-      end
-
-      local cortex_openocd = cortex_debug.openocd_config {
-        name = "STM32 ST-Link cortex-debug launch",
-        cwd = "${workspaceFolder}",
-        executable = input_elf,
-        configFiles = function()
-          return { "interface/stlink.cfg", input_openocd_target() }
+    keys = {
+      {
+        "<leader>dM",
+        function()
+          require("dap").continue()
         end,
-        gdbTarget = "localhost:3333",
-        rttConfig = cortex_debug.rtt_config(0),
-        showDevDebugOutput = false,
-      }
-
-      local dap = require "dap"
-      dap.configurations.c = dap.configurations.c or {}
-      dap.configurations.cpp = dap.configurations.cpp or {}
-      dap.configurations.cuda = dap.configurations.cuda or {}
-
-      table.insert(dap.configurations.c, cortex_openocd)
-      table.insert(dap.configurations.cpp, vim.deepcopy(cortex_openocd))
-      table.insert(dap.configurations.cuda, vim.deepcopy(cortex_openocd))
+        desc = "DAP: start STM32 cortex-debug",
+      },
+    },
+    config = function()
+      require("configs.cortex_debug").setup()
     end,
   },
 
@@ -174,8 +145,7 @@ local plugins = {
 
   -- override plugin configs
   {
-    "williamboman/mason.nvim",
-    opts = overrides.mason,
+    "mason-org/mason.nvim",
   },
 
   {
@@ -197,31 +167,21 @@ local plugins = {
   },
 
   {
-    "Pocco81/TrueZen.nvim",
-    event = "VeryLazy",
-    cmd = {
-      "TZAtaraxis",
-      "TZMinimalist",
-      "TZFocus",
+    "folke/zen-mode.nvim",
+    cmd = "ZenMode",
+    keys = {
+      { "<leader>ta", "<cmd>ZenMode<cr>", desc = "Toggle zen mode" },
     },
-    config = function()
-      require "configs.truezen"
-    end,
+    opts = require "configs.zen",
   },
 
   {
     "dhananjaylatkar/cscope_maps.nvim",
-    dependencies = {
-      "folke/which-key.nvim", -- optional [for whichkey hints]
-      "nvim-telescope/telescope.nvim", -- optional [for picker="telescope"]
-      "ibhagwan/fzf-lua", -- optional [for picker="fzf-lua"]
-      "nvim-tree/nvim-web-devicons", -- optional [for devicons in telescope or fzf]
-    },
-    event = "VeryLazy",
-    opts = {
-      -- USE EMPTY FOR DEFAULT OPTIONS
-      -- DEFAULTS ARE LISTED BELOW
-    },
+    cmd = { "Cs", "Cscope", "Cstag", "CsPrompt", "CsStackView" },
+    cond = function()
+      return vim.fn.executable "cscope" == 1
+    end,
+    ft = { "c", "cpp", "cuda" },
     config = function()
       require "configs.cscope_maps"
     end,
@@ -260,35 +220,18 @@ local plugins = {
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    event = "VeryLazy",
+    dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
+    keys = {
+      {
+        "<leader>ha",
+        function()
+          require("configs.harpoon").open_telescope()
+        end,
+        desc = "Open harpoon window",
+      },
+    },
     config = function()
-      local harpoon = require "harpoon"
-      harpoon:setup {}
-
-      -- Telescope integration for harpoon
-      local telescope_config = require("telescope.config").values
-      local function open_harpoon_telescope()
-        local harpoon_list = harpoon:list()
-        local file_paths = {}
-
-        for _, item in ipairs(harpoon_list.items) do
-          table.insert(file_paths, item.value)
-        end
-
-        require("telescope.pickers")
-          .new({}, {
-            prompt_title = "Harpoon",
-            finder = require("telescope.finders").new_table {
-              results = file_paths,
-            },
-            previewer = telescope_config.file_previewer {},
-            sorter = telescope_config.generic_sorter {},
-          })
-          :find()
-      end
-
-      vim.keymap.set("n", "<leader>ha", open_harpoon_telescope, { desc = "Open harpoon window" })
+      require("configs.harpoon").setup()
     end,
   },
 
@@ -296,7 +239,7 @@ local plugins = {
     "michaelb/sniprun",
     branch = "master",
     build = "sh install.sh",
-    event = "VeryLazy",
+    cmd = "SnipRun",
     config = function()
       require("sniprun").setup {}
     end,
@@ -314,7 +257,6 @@ local plugins = {
   {
     "kaarmu/typst.vim",
     ft = "typst",
-    lazy = false,
   },
 }
 

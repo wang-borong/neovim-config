@@ -11,7 +11,7 @@
 - [快捷键映射](#快捷键映射)
 - [插件列表](#插件列表)
 - [语言支持](#语言支持)
-- [代码优化](#代码优化)
+- [配置验证](#配置验证)
 
 ## ✨ 特性
 
@@ -28,15 +28,18 @@
 - 📂 **文件管理**: NvimTree 文件浏览器
 - 🔍 **快速搜索**: Telescope 模糊搜索
 - 📊 **Git 集成**: Gitsigns Git 状态显示
-- 🎭 **专注模式**: TrueZen 专注模式支持
+- 🎭 **专注模式**: Zen Mode 专注模式支持
 
 ## 🚀 安装
 
 ### 前置要求
 
-- Neovim >= 0.10.0
+- Neovim >= 0.11.3（推荐使用当前稳定版 0.12）
 - Git
-- 可选: 各种语言服务器（通过 Mason 自动安装）
+- `ripgrep`、`fd`（搜索与文件发现）
+- 可选: 各种语言服务器、格式化器和调试适配器（通过 Mason 安装）
+- 可选: 文本转换需要 `pandoc`，编码转换需要 `uchardet` 和 `iconv`
+- 可选: Cscope 工作流需要 `cscope`
 - 可选: STM32 调试需要系统安装 `openocd` 和 `arm-none-eabi-gdb`
 
 ### 安装步骤
@@ -61,6 +64,13 @@
 
 4. **等待插件安装**: 首次启动时会自动安装所有插件，这可能需要几分钟。
 
+5. **安装配置声明的开发工具**:
+   ```vim
+   :MasonInstallAll
+   ```
+
+`lazy-lock.json` 已纳入版本控制，用于固定 Neovim 插件版本。Mason 管理的外部工具只保证安装清单一致，版本仍由 Mason registry 决定。
+
 ## 📁 配置结构
 
 ```
@@ -69,6 +79,7 @@
 ├── lazy-lock.json          # 插件锁定文件
 ├── README.md               # 本文件
 ├── LICENSE                 # 许可证
+├── scripts/check.sh        # 格式、JSON 和 headless 启动检查
 ├── snippets/               # 代码片段目录
 └── lua/
     ├── options.lua         # Neovim 选项配置
@@ -84,10 +95,13 @@
     │   ├── conform.lua     # Conform 配置
     │   ├── lint.lua        # nvim-lint 配置
     │   ├── dap.lua         # nvim-dap 配置
+    │   ├── dap_keys.lua    # DAP 懒加载快捷键
+    │   ├── cortex_debug.lua # STM32 cortex-debug 配置
+    │   ├── harpoon.lua     # Harpoon/Telescope 集成
     │   ├── jdtls.lua       # Java LSP/DAP 配置
     │   ├── rustaceanvim.lua # Rust 专用增强配置
     │   ├── gitsigns.lua    # Gitsigns 配置
-    │   ├── truezen.lua     # TrueZen 配置
+    │   ├── zen.lua         # Zen Mode 配置
     │   ├── cscope_maps.lua # Cscope 映射
     │   └── overrides.lua   # 插件覆盖配置
     └── plugins/            # 自定义插件
@@ -153,16 +167,16 @@
 - Python 脚本 (shebang)
 - C/C++ 文件 (版权信息 + includes)
 - C/C++ 头文件 (header guards)
-- 自动更新版权年份
+- 保存 C/C++ 文件时自动更新版权年份
 
 ### 编码转换
 
-- `ToUTF8()`: 将文件编码转换为 UTF-8
+- `:ToUTF8`: 安全地将当前磁盘文件转换为 UTF-8；缓冲区有未保存修改时会拒绝执行
 
 ### 文本转换
 
-- Markdown ↔ LaTeX 转换
-- 支持视觉选择模式和剪贴板模式
+- `:Md2Tex`、`:Tex2Md`: 转换系统剪贴板内容
+- `:'<,'>Md2Tex`、`:'<,'>Tex2Md`: 转换可视选择的完整行范围
 
 ## ⌨️ 快捷键映射
 
@@ -188,13 +202,11 @@ Leader 键设置为 `;`
 | `<leader>tl` | Telescope live_grep |
 | `<leader>te` | 打开 Telescope |
 
-### TrueZen 专注模式
+### Zen Mode 专注模式
 
 | 快捷键 | 功能 |
 |--------|------|
-| `<leader>ta` | 进入 Ataraxis 模式 |
-| `<leader>tm` | 进入 Minimalist 模式 |
-| `<leader>tf` | 进入 Focus 模式 |
+| `<leader>ta` | 切换 Zen Mode |
 
 ### Buffer 导航
 
@@ -233,6 +245,7 @@ Leader 键设置为 `;`
 | `<leader>du` | 切换 DAP UI |
 | `<leader>dx` | 终止调试 |
 | `<leader>dl` | 设置日志断点 |
+| `<leader>dM` | 加载 STM32 cortex-debug 并启动调试 |
 
 ### Git 操作 (Gitsigns)
 
@@ -295,7 +308,7 @@ Leader 键设置为 `;`
 
 - **nvim-tree**: 文件浏览器
 - **telescope.nvim**: 模糊查找器
-- **TrueZen.nvim**: 专注模式
+- **zen-mode.nvim**: 专注模式
 - **gitsigns.nvim**: Git 状态显示
 
 ### 编辑增强
@@ -330,7 +343,8 @@ Leader 键设置为 `;`
 - **Markdown**: marksman
 - **LaTeX**: texlab
 - **Verilog**: verible
-- **JSON**: jqls
+- **JSON/JSONC**: jsonls
+- **jq**: jqls
 - **Typst**: tinymist
 
 ### TreeSitter 解析器
@@ -339,15 +353,15 @@ Leader 键设置为 `;`
 - bash, python, cuda, asm, perl
 - c, cpp, dart, rust, ron, toml, go, gomod, gosum, gowork
 - java, kotlin, cmake, make
-- verilog, markdown, markdown_inline
+- verilog, markdown, markdown_inline, typst
 
 ### 文件类型特定配置
 
-- **Lua/Markdown/TeX**: 2 空格缩进
+- **Lua/Markdown/TeX/Typst**: 2 空格缩进
 - **Python**: 120 字符行宽
 - **Rust**: 100 字符行宽
-- **C/C++ 头文件**: 8 空格 tab
-- **C++ 源文件**: 2 空格 tab
+- **C**: 8 列宽硬 Tab
+- **C++**: 2 空格缩进
 - **Go/Kconfig/Make/DTS**: 使用 tab 而非空格
 
 ## 📝 自定义功能
@@ -361,7 +375,7 @@ Leader 键设置为 `;`
 
 ### 版权信息自动更新
 
-打开 C/C++ 文件时自动更新版权年份。
+保存 C/C++ 文件前自动更新版权年份，避免仅查看文件就产生修改。
 
 ### 编码检测和转换
 
@@ -370,6 +384,16 @@ Leader 键设置为 `;`
 ### 文本格式转换
 
 支持 Markdown 和 LaTeX 之间的转换，使用 pandoc。
+
+## ✅ 配置验证
+
+提交配置前运行：
+
+```bash
+./scripts/check.sh
+```
+
+检查内容包括 Lua 格式、JSON/lockfile 语法、Git whitespace，以及隔离 cache/state 后的 Neovim headless 启动。
 
 ## 🎨 主题
 

@@ -61,17 +61,19 @@ end
 
 function M.visual_selection(replace)
   local saved_reg = vim.fn.getreg '"'
+  local saved_reg_type = vim.fn.getregtype '"'
   vim.cmd "normal! vgvy"
 
-  local pattern = vim.fn.escape(vim.fn.getreg '"', "\\/.*'$^~[]")
-  pattern = vim.fn.substitute(pattern, "\n$", "", "")
+  local selection = vim.fn.getreg('"'):gsub("\n$", "")
+  local pattern = "\\V" .. vim.fn.escape(selection, "\\"):gsub("\n", "\\n")
 
   if replace then
-    vim.fn.feedkeys(":%s/" .. pattern .. "/")
+    local command = ":%s/" .. vim.fn.escape(pattern, "/") .. "/"
+    vim.api.nvim_feedkeys(command, "n", false)
   end
 
   vim.fn.setreg("/", pattern)
-  vim.fn.setreg('"', saved_reg)
+  vim.fn.setreg('"', saved_reg, saved_reg_type)
 end
 
 -- Get git author name or default
@@ -91,7 +93,7 @@ end
 local function create_shebang_header(filetype)
   local interpreters = {
     sh = "bash",
-    python = "python",
+    python = "python3",
   }
   local interpreter = interpreters[filetype]
   if interpreter then
@@ -124,9 +126,9 @@ end
 -- Add C header guard
 local function add_c_header_guard(headers)
   local filename = vim.fn.expand "%:t"
-  local guard = filename:gsub("[~!@#&=,'|\"\\%$%.%-%+%?%*%^%%]+", "_"):upper()
-  table.insert(headers, string.format("#ifndef __%s", guard))
-  table.insert(headers, string.format("#define __%s", guard))
+  local guard = "HEADER_" .. filename:gsub("[^%w]", "_"):upper() .. "_INCLUDED"
+  table.insert(headers, string.format("#ifndef %s", guard))
+  table.insert(headers, string.format("#define %s", guard))
   table.insert(headers, "")
   table.insert(headers, "")
   table.insert(headers, "")
@@ -161,9 +163,9 @@ function M.insert_header()
     row = add_c_headers(headers)
   elseif extension == "h" then
     row = add_c_header_guard(headers)
-  elseif extension == "cpp" or extension == "cc" then
+  elseif extension == "cpp" or extension == "cc" or extension == "cxx" then
     row = add_cpp_headers(headers)
-  elseif extension == "hpp" then
+  elseif extension == "hpp" or extension == "hh" or extension == "hxx" then
     row = add_cpp_header_pragma(headers)
   end
 
@@ -177,7 +179,7 @@ function M.update_header()
 
   -- Check if author is in the line
   local author_start, author_end = string.find(copyright_line, author, nil, true)
-  if not author_start or author_end <= author_start then
+  if not author_start or not author_end then
     return
   end
 

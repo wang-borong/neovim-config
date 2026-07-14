@@ -29,50 +29,13 @@ M.treesitter = {
     "verilog",
     "markdown",
     "markdown_inline",
+    "typst",
   },
   indent = {
     enable = true,
     -- disable = {
     --   "python"
     -- },
-  },
-}
-
-M.mason = {
-  ensure_installed = {
-    "lua-language-server",
-    "bash-language-server",
-    "stylua",
-    "shfmt",
-    "shellcheck",
-    "jq",
-    "clang-format",
-    "clangd",
-    "codelldb",
-    "cortex-debug",
-    "debugpy",
-    "delve",
-    "gofumpt",
-    "goimports",
-    "golangci-lint",
-    "google-java-format",
-    "gopls",
-    "asm-lsp",
-    "basedpyright",
-    "cmakelang",
-    "neocmakelsp",
-    "jdtls",
-    "java-debug-adapter",
-    "java-test",
-    "kotlin-debug-adapter",
-    "kotlin-lsp",
-    "ktlint",
-    "marksman",
-    "prettier",
-    "prettierd",
-    "ruff",
-    "verible",
-    "tinymist",
   },
 }
 

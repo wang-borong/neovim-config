@@ -29,18 +29,10 @@ telescope_map("<leader>s", "grep_string", "Telescope grep_string")
 telescope_map("<leader>te", "", "Spawn telescope")
 telescope_map("<leader>tl", "live_grep", "Telescope live_grep")
 
--- TrueZen mappings
-local truezen_commands = {
-  ta = "TZAtaraxis",
-  tm = "TZMinimalist",
-  tf = "TZFocus",
-}
-for key, command in pairs(truezen_commands) do
-  cmd_map("n", "<leader>" .. key, command, "Enter " .. command:lower() .. " mode of truezen")
-end
-
 -- Other utility mappings
-cmd_map("n", "<leader>u", "lua ToUTF8()", "Convert file encoding to utf-8")
+map("n", "<leader>u", function()
+  require("functions").to_utf8()
+end, { desc = "Convert file encoding to UTF-8" })
 map({ "n", "v" }, "<leader>fm", function()
   require("conform").format {
     async = true,
@@ -56,12 +48,23 @@ map("n", "<A-k>", tabufline.prev, { desc = "Goto prev buffer" })
 -- Switch directory to file's directory or previous directory
 map("n", "<leader>j", function()
   local cwd = vim.fn.getcwd()
-  local file_dir = vim.fn.expand "%:p:h"
+  local filename = vim.api.nvim_buf_get_name(0)
+
+  if filename == "" then
+    vim.notify("The current buffer has no file directory", vim.log.levels.WARN)
+    return
+  end
+
+  local file_dir = vim.fs.dirname(filename)
 
   if cwd ~= file_dir then
-    vim.cmd("cd " .. file_dir)
+    local ok, err = pcall(vim.api.nvim_set_current_dir, file_dir)
+    if not ok then
+      vim.notify(err, vim.log.levels.ERROR)
+      return
+    end
   else
-    vim.cmd "try | cd - | catch | | endtry"
+    pcall(vim.cmd, "cd -")
   end
   vim.cmd "pwd"
 end, { desc = "Switch dir to file's dir or cwd(where nvim executed)" })
@@ -81,7 +84,7 @@ local function visual_search(direction)
   return function()
     helper.visual_selection(false)
     local pattern = vim.fn.getreg "/"
-    vim.cmd(string.format("%s%s", direction, pattern))
+    vim.fn.search(pattern, direction == "?" and "bW" or "W")
   end
 end
 

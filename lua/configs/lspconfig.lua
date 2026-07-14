@@ -21,13 +21,11 @@ local servers = {
     cmd = {
       "clangd",
       "--header-insertion=never",
-      "-j",
-      string.gsub(vim.fn.system "nproc", "\n", ""),
       "--completion-style=detailed",
       "--function-arg-placeholders",
       "--rename-file-limit=0",
       "--background-index",
-      "--background-index-priority=normal",
+      "--background-index-priority=low",
       "--clang-tidy",
     },
   },
@@ -87,6 +85,7 @@ local servers = {
     },
   },
   jqls = {},
+  jsonls = {},
   marksman = {},
   tinymist = {
     settings = {

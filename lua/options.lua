@@ -1,9 +1,7 @@
 require "nvchad.options"
 
 local opt = vim.opt
-local o = vim.o
 local g = vim.g
-local autocmd = vim.api.nvim_create_autocmd
 
 -- Snippet paths configuration
 local snippets_path = vim.fn.stdpath "config" .. "/snippets"
@@ -12,80 +10,49 @@ g.snipmate_snippets_path = snippets_path
 g.lua_snippets_path = snippets_path
 
 -- Basic editor options
-o.smartcase = true
-o.ignorecase = true
-o.shiftwidth = 4
-o.smartindent = true
-o.tabstop = 4
-o.autoindent = true
-o.cursorline = true
-o.wrap = true
-o.mouse = ""
-
+opt.smartcase = true
+opt.ignorecase = true
+opt.shiftwidth = 4
+opt.tabstop = 4
+opt.softtabstop = 4
+opt.expandtab = true
+opt.smartindent = true
+opt.autoindent = true
+opt.cursorline = true
+opt.wrap = true
+opt.mouse = ""
 opt.iskeyword:append "-"
 
--- Helper function to create autocmd with pattern and callback
-local function create_autocmd(events, pattern, callback)
-  autocmd(events, {
-    pattern = pattern,
-    callback = callback,
+local option_group = vim.api.nvim_create_augroup("UserFiletypeOptions", { clear = true })
+
+local function set_local(options)
+  for name, value in pairs(options) do
+    vim.opt_local[name] = value
+  end
+end
+
+local filetype_options = {
+  lua = { shiftwidth = 2, softtabstop = 2, tabstop = 2, expandtab = true },
+  markdown = { shiftwidth = 2, softtabstop = 2, tabstop = 2, expandtab = true },
+  tex = { shiftwidth = 2, softtabstop = 2, tabstop = 2, expandtab = true },
+  typst = { shiftwidth = 2, softtabstop = 2, tabstop = 2, expandtab = true },
+  python = { shiftwidth = 4, softtabstop = 4, tabstop = 4, expandtab = true, textwidth = 120 },
+  rust = { shiftwidth = 4, softtabstop = 4, tabstop = 4, expandtab = true, textwidth = 100 },
+  c = { shiftwidth = 8, softtabstop = 0, tabstop = 8, expandtab = false },
+  cpp = { shiftwidth = 2, softtabstop = 2, tabstop = 2, expandtab = true },
+  go = { shiftwidth = 4, softtabstop = 0, tabstop = 4, expandtab = false },
+  kconfig = { softtabstop = 0, expandtab = false },
+  make = { softtabstop = 0, expandtab = false },
+  dts = { softtabstop = 0, expandtab = false },
+}
+
+for filetype, options in pairs(filetype_options) do
+  local local_options = options
+  vim.api.nvim_create_autocmd("FileType", {
+    group = option_group,
+    pattern = filetype,
+    callback = function()
+      set_local(local_options)
+    end,
   })
-end
-
--- FileType-specific configurations
-local filetype_configs = {
-  {
-    pattern = { "lua", "markdown", "tex" },
-    callback = function()
-      o.shiftwidth = 2
-      o.tabstop = 2
-    end,
-  },
-  {
-    pattern = { "python" },
-    callback = function()
-      o.textwidth = 120
-    end,
-  },
-  {
-    pattern = { "rust" },
-    callback = function()
-      o.textwidth = 100
-    end,
-  },
-  {
-    pattern = { "kconfig", "make", "go", "dts" },
-    callback = function()
-      o.expandtab = false
-    end,
-  },
-}
-
--- Buffer pattern-specific configurations
-local buffer_configs = {
-  {
-    pattern = { "*.c", "*.h" },
-    callback = function()
-      o.tabstop = 8
-      o.shiftwidth = 8
-      o.expandtab = false
-    end,
-  },
-  {
-    pattern = { "*.cc", "*.cpp", "*.hh", "*.hpp" },
-    callback = function()
-      o.tabstop = 2
-      o.shiftwidth = 2
-    end,
-  },
-}
-
--- Apply FileType autocmds
-for _, config in ipairs(filetype_configs) do
-  create_autocmd({ "FileType" }, config.pattern, config.callback)
-end
-
--- Apply buffer pattern autocmds
-for _, config in ipairs(buffer_configs) do
-  create_autocmd({ "BufEnter", "BufWinEnter" }, config.pattern, config.callback)
 end

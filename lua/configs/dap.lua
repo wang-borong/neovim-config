@@ -20,7 +20,7 @@ end
 if ok_mason_dap then
   mason_dap.setup {
     ensure_installed = { "codelldb", "delve", "javadbg", "javatest", "kotlin", "python" },
-    automatic_installation = true,
+    automatic_installation = false,
     handlers = {
       function(config)
         require("mason-nvim-dap").default_setup(config)
@@ -216,23 +216,6 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
-
-local function map(key, rhs, desc)
-  vim.keymap.set("n", key, rhs, { desc = "DAP: " .. desc })
-end
-
-map("<leader>dc", dap.continue, "continue")
-map("<leader>dB", dap.toggle_breakpoint, "toggle breakpoint")
-map("<leader>dC", dap.clear_breakpoints, "clear breakpoints")
-map("<leader>di", dap.step_into, "step into")
-map("<leader>do", dap.step_over, "step over")
-map("<leader>dO", dap.step_out, "step out")
-map("<leader>dr", dap.repl.open, "open repl")
-map("<leader>du", dapui.toggle, "toggle ui")
-map("<leader>dx", dap.terminate, "terminate")
-map("<leader>dl", function()
-  dap.set_breakpoint(nil, nil, vim.fn.input "Log point message: ")
-end, "set logpoint")
 
 vim.api.nvim_create_user_command("STM32OpenOCD", function(opts)
   if vim.fn.exepath "openocd" == "" then
